@@ -394,6 +394,7 @@
             border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-right: 8px;
         }
 
         @keyframes spin {
@@ -466,6 +467,15 @@
             color: #333;
             margin-top: 10px;
             font-size: 1.1em;
+        }
+
+        .file-info {
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
         }
 
         @media (max-width: 768px) {
@@ -589,9 +599,10 @@
             </div>
 
             <p style="color: #666; margin-top: 15px; font-size: 0.9em;">
-                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">URL email@domain.com:password</code> (one per line)<br>
-                ℹ️ Ví dụ: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">https://mail.google.com/mail/u/0/#inbox dangthesang@gmail.com:nguyensang123</code>
+                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com</code> hoặc <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com:password</code> (một dòng một email)
             </p>
+
+            <div id="fileInfo" class="file-info" style="display: none;"></div>
 
             <!-- Messages -->
             <div id="message" class="message"></div>
@@ -601,25 +612,25 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <div class="progress-text" id="progressText">Preparing...</div>
+                <div class="progress-text" id="progressText">Chuẩn bị...</div>
             </div>
 
             <!-- Stats -->
             <div id="statsContainer" class="stats-grid" style="display: none;">
                 <div class="stat-card">
-                    <div class="stat-label">Total Processed</div>
+                    <div class="stat-label">📧 Emails Found</div>
                     <div class="stat-number" id="statTotal">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">✅ Accept</div>
+                    <div class="stat-label">✅ Vietnamese</div>
                     <div class="stat-number" id="statAccept">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">📋 Review</div>
+                    <div class="stat-label">📋 Possible</div>
                     <div class="stat-number" id="statReview">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">❌ Reject</div>
+                    <div class="stat-label">❌ Not Vietnamese</div>
                     <div class="stat-number" id="statReject">0</div>
                 </div>
                 <div class="stat-card">
@@ -638,8 +649,8 @@
                     <span class="spinner" style="display: none;" id="processSpinner"></span>
                     <span id="processBtnText">🚀 Bắt Đầu Lọc</span>
                 </button>
-                <button class="btn btn-success" onclick="downloadAccept()">⬇️ Accept (≥75)</button>
-                <button class="btn btn-success" onclick="downloadReview()">⬇️ Review (55-74)</button>
+                <button class="btn btn-success" id="downloadAcceptBtn" onclick="downloadAccept()" style="display: none;">⬇️ Download Vietnamese</button>
+                <button class="btn btn-success" id="downloadReviewBtn" onclick="downloadReview()" style="display: none;">⬇️ Download Possible</button>
                 <button class="btn btn-secondary" onclick="resetUpload()">🔄 Reset</button>
             </div>
 
@@ -728,7 +739,7 @@
                     <h3>👤 STRICT_GIVEN</h3>
                     <p>High-confidence given name tokens</p>
                     <div class="dataset-count">47 tokens</div>
-                    <p style="margin-top: 10px; font-size: 0.85em; color: #999;">hieu, kiet, vinh, loc, dat, dung, ha, hiep, huong, ky, lam, long, luong, nam, nhan, phat, quy, sang, son, tai, tam, thinh, thuan, tien, tin, toan, tung, vy, xuan, yen, chi, hanh, diem, diep, dinh, dong, giang, giao, hai, hang, hao, hau, hien, hinh, hong, huyen, viet, bao, thanh</p>
+                    <p style="margin-top: 10px; font-size: 0.85em; color: #999;">hieu, kiet, vinh, loc, dat, dung, ha, hiep, huong, ky, lam, long, luong, nam, nhan, phat, quy, sang, son, tai, tam, thinh, thuan, tien, tin, toan, tung, vy, xuan, yen, chi, hanh, diem, diep, dinh, dong, giang, giao, hai, hang, hao, hau, hien, hinh, hong, huyen</p>
                 </div>
 
                 <div class="dataset-card">
@@ -848,14 +859,14 @@
 
         const VN_SURNAMES_STRONG = new Set([
             'nguyen', 'tran', 'pham', 'hoang', 'dang', 'bui', 'do', 'vo', 'vu', 'ngo', 'duong',
-            'ly', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
-            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'bach', 'cam',
+            'ly', 'vu', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
+            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'ta', 'tran', 'bach', 'cam',
             'cao', 'chau', 'chi', 'chu', 'chua', 'co', 'cung', 'cu', 'cuong', 'dach', 'dam',
-            'dao', 'dau', 'day', 'deo', 'di', 'diem', 'dieu', 'dong', 'dung',
-            'ea', 'em', 'fa', 'gia', 'giao', 'go', 'gon', 'gum', 'guo', 'hang', 'hao',
-            'hat', 'hau', 'hay', 'hem', 'hen', 'heo', 'hieu', 'ho', 'hoa', 'hoai',
+            'dao', 'dau', 'day', 'deo', 'di', 'diem', 'dieu', 'dinh', 'dong', 'dung', 'duong',
+            'ea', 'em', 'fa', 'gia', 'giao', 'go', 'gon', 'gum', 'guo', 'han', 'hang', 'hao',
+            'hat', 'hau', 'hay', 'hem', 'hen', 'heo', 'hhe', 'hieu', 'hieu', 'ho', 'hoa', 'hoai',
             'hoan', 'hoat', 'hoc', 'hoi', 'hom', 'hon', 'hoo', 'hop', 'hot', 'hou', 'hoy', 'hu',
-            'hua', 'huai', 'huan', 'huang', 'huap', 'huat', 'huc', 'hue', 'huen', 'huer',
+            'hua', 'huai', 'huan', 'huang', 'huap', 'huat', 'huc', 'hue', 'hueh', 'huen', 'huer',
             'hues', 'huet', 'hui'
         ]);
 
@@ -869,20 +880,21 @@
             'thuan': 0.65, 'tien': 0.5, 'vy': 0.6, 'xuan': 0.55, 'chi': 0.4
         };
 
-        // ============ EMAIL EXTRACTION FROM LINE ============
+        // ============ EMAIL EXTRACTION AND VALIDATION ============
         function extractEmailFromLine(line) {
-            // Format: URL email@domain.com:password
-            // Tìm email trong dòng
-            const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i;
+            // Regex để trích xuất email từ bất kỳ dòng nào
+            const emailRegex = /([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i;
             const match = line.match(emailRegex);
-            return match ? match[1].trim() : null;
+            return match ? match[1].toLowerCase().trim() : null;
         }
 
-        // ============ EMAIL VALIDATION ============
         function isValidEmail(email) {
+            if (!email) return false;
+            
             if (performanceSettings.emailValidation === 'relaxed') {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             }
+            
             const rfc5322 = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
             return rfc5322.test(email);
         }
@@ -1129,6 +1141,7 @@
 
                 selectedFile = file;
                 showMessage(`✅ File selected: ${file.name}`, 'success');
+                showFileInfo(file);
                 document.getElementById('buttonGroup').style.display = 'flex';
             }
         }
@@ -1146,7 +1159,16 @@
 
             selectedFile = file;
             showMessage(`✅ File selected: ${file.name}`, 'success');
+            showFileInfo(file);
             document.getElementById('buttonGroup').style.display = 'flex';
+        }
+
+        function showFileInfo(file) {
+            const sizeKB = (file.size / 1024).toFixed(2);
+            const dateModified = new Date(file.lastModified).toLocaleString();
+            const infoHtml = `📄 File: ${file.name} | Size: ${sizeKB} KB | Modified: ${dateModified}`;
+            document.getElementById('fileInfo').innerHTML = infoHtml;
+            document.getElementById('fileInfo').style.display = 'block';
         }
 
         function showMessage(text, type = 'info') {
@@ -1158,16 +1180,16 @@
 
         let allResults = [];
         let selectedFile = null;
-        let currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
+        let currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
 
         async function processFile() {
-            try {
-                const file = selectedFile || document.getElementById('fileInput').files[0];
-                if (!file) {
-                    showMessage('❌ Please select a file', 'error');
-                    return;
-                }
+            const file = selectedFile || document.getElementById('fileInput').files[0];
+            if (!file) {
+                showMessage('❌ Please select a file', 'error');
+                return;
+            }
 
+            try {
                 const text = await file.text();
                 const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
 
@@ -1177,31 +1199,37 @@
                 }
 
                 allResults = [];
-                currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
+                currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
 
                 document.getElementById('progressContainer').style.display = 'block';
                 document.getElementById('processBtn').disabled = true;
                 document.getElementById('processSpinner').style.display = 'inline-block';
                 document.getElementById('processBtnText').textContent = 'Processing...';
+                document.getElementById('downloadAcceptBtn').style.display = 'none';
+                document.getElementById('downloadReviewBtn').style.display = 'none';
 
                 const startTime = Date.now();
                 const chunkSize = performanceSettings.chunkSize;
                 const batchDelay = performanceSettings.batchDelay;
 
+                // Process lines in chunks
                 for (let i = 0; i < lines.length; i += chunkSize) {
                     const chunk = lines.slice(i, i + chunkSize);
                     
                     for (const line of chunk) {
-                        // Extract email từ line
+                        // Extract email from line
                         const email = extractEmailFromLine(line);
                         
                         if (!email) {
                             if (performanceSettings.debugMode) {
-                                console.log('❌ Could not extract email from:', line);
+                                console.log('No email found in line:', line);
                             }
                             continue;
                         }
 
+                        currentStats.extracted++;
+
+                        // Classify email
                         const result = classifyEmail(email);
                         allResults.push(result);
 
@@ -1214,7 +1242,7 @@
                         }
                     }
 
-                    updateProgress(currentStats.total, lines.length);
+                    updateProgress(currentStats.extracted, lines.length);
 
                     if (i + chunkSize < lines.length) {
                         await new Promise(resolve => setTimeout(resolve, batchDelay));
@@ -1223,7 +1251,7 @@
 
                 const endTime = Date.now();
                 const timeSeconds = ((endTime - startTime) / 1000).toFixed(2);
-                const speed = currentStats.total > 0 ? (currentStats.total / timeSeconds).toFixed(0) : 0;
+                const speed = (currentStats.total / timeSeconds).toFixed(0);
 
                 document.getElementById('statTime').textContent = timeSeconds;
                 document.getElementById('statSpeed').textContent = speed + '/s';
@@ -1231,24 +1259,36 @@
                 updateStatsDisplay();
                 updateResultsPreview();
 
+                // Show download buttons
+                if (currentStats.accept > 0) {
+                    document.getElementById('downloadAcceptBtn').style.display = 'flex';
+                }
+                if (currentStats.review > 0) {
+                    document.getElementById('downloadReviewBtn').style.display = 'flex';
+                }
+
                 document.getElementById('processBtn').disabled = false;
                 document.getElementById('processSpinner').style.display = 'none';
                 document.getElementById('processBtnText').textContent = '✅ Processing Complete!';
 
-                showMessage(`✅ Processed ${currentStats.total} emails in ${timeSeconds}s`, 'success');
+                showMessage(`✅ Processed ${currentStats.extracted} lines, found ${currentStats.total} emails in ${timeSeconds}s`, 'success');
+
+                if (performanceSettings.debugMode) {
+                    console.log('Processing complete:', currentStats);
+                }
             } catch (error) {
-                showMessage(`❌ Error: ${error.message}`, 'error');
                 document.getElementById('processBtn').disabled = false;
                 document.getElementById('processSpinner').style.display = 'none';
                 document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
+                showMessage(`❌ Error: ${error.message}`, 'error');
                 console.error('Processing error:', error);
             }
         }
 
         function updateProgress(current, total) {
-            const percent = total > 0 ? (current / total) * 100 : 0;
+            const percent = (current / total) * 100;
             document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = `Processing: ${current}/${total} (${Math.round(percent)}%)`;
+            document.getElementById('progressText').textContent = `Scanning: ${current}/${total} (${Math.round(percent)}%)`;
         }
 
         function updateStatsDisplay() {
@@ -1279,12 +1319,12 @@
 
         function downloadAccept() {
             const accept = allResults.filter(r => r.classification === 'accept');
-            downloadResults(accept, 'accept');
+            downloadResults(accept, 'vietnamese');
         }
 
         function downloadReview() {
             const review = allResults.filter(r => r.classification === 'review');
-            downloadResults(review, 'review');
+            downloadResults(review, 'possible');
         }
 
         function downloadResults(results, type) {
@@ -1293,28 +1333,33 @@
                 return;
             }
 
-            const csv = results.map(r => `${r.email},${r.score},${r.parse}`).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
+            // Format: email:score
+            const content = results.map(r => `${r.email}:${r.score}`).join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `vietnamese-names-${type}-${new Date().getTime()}.csv`;
+            a.download = `vietnamese-names-${type}-${Date.now()}.txt`;
             a.click();
+            URL.revokeObjectURL(url);
 
-            showMessage(`✅ Downloaded ${results.length} ${type} results`, 'success');
+            showMessage(`✅ Downloaded ${results.length} ${type} emails`, 'success');
         }
 
         function resetUpload() {
             selectedFile = null;
             document.getElementById('fileInput').value = '';
             allResults = [];
-            currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
+            currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
             document.getElementById('progressContainer').style.display = 'none';
             document.getElementById('statsContainer').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('fileInfo').style.display = 'none';
             document.getElementById('processBtn').disabled = false;
             document.getElementById('processSpinner').style.display = 'none';
             document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
+            document.getElementById('downloadAcceptBtn').style.display = 'none';
+            document.getElementById('downloadReviewBtn').style.display = 'none';
             showMessage('🔄 Reset complete', 'info');
         }
 
