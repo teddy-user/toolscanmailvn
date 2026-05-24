@@ -157,23 +157,6 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .setting-item input[type="range"] {
-            padding: 5px;
-            height: 30px;
-        }
-
-        .range-value {
-            color: #667eea;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        .range-info {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 5px;
-        }
-
         .button-group {
             display: flex;
             gap: 10px;
@@ -198,7 +181,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
         }
@@ -331,61 +314,6 @@
             color: #991b1b;
         }
 
-        .test-input {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .test-input input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-
-        .test-input input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .test-result {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .result-item {
-            margin: 15px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .result-item.review {
-            border-left-color: #f59e0b;
-        }
-
-        .result-item.reject {
-            border-left-color: #ef4444;
-        }
-
-        .result-label {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-            color: #333;
-            margin: 5px 0;
-        }
-
         .spinner {
             display: inline-block;
             width: 20px;
@@ -394,7 +322,6 @@
             border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 8px;
         }
 
         @keyframes spin {
@@ -435,47 +362,6 @@
             background: #dbeafe;
             color: #0c2d6b;
             border-left: 4px solid #3b82f6;
-        }
-
-        .dataset-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .dataset-card {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e0e7ff;
-        }
-
-        .dataset-card h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .dataset-card p {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        .dataset-count {
-            font-weight: 600;
-            color: #333;
-            margin-top: 10px;
-            font-size: 1.1em;
-        }
-
-        .file-info {
-            background: #f0f0f0;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
         }
 
         @media (max-width: 768px) {
@@ -521,75 +407,13 @@
         <!-- Tabs -->
         <div class="tabs-container">
             <button class="tab-button active" onclick="switchTab('upload')">📤 Upload & Process</button>
-            <button class="tab-button" onclick="switchTab('test')">🧪 Test Email</button>
             <button class="tab-button" onclick="switchTab('stats')">📊 Statistics</button>
-            <button class="tab-button" onclick="switchTab('dataset')">📚 Dataset Info</button>
-            <button class="tab-button" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
         <!-- Tab 1: Upload & Process -->
         <div id="upload" class="content active">
             <h2>📤 Upload & Process</h2>
             
-            <!-- Performance Settings -->
-            <div class="settings-grid">
-                <div class="setting-item">
-                    <label>🚀 Chunk Size (entries/batch)</label>
-                    <input type="range" id="chunkSize" min="10" max="1000" step="10" value="100">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="range-value" id="chunkSizeValue">100</span>
-                        <span class="range-info">Entries per batch (higher = faster, more memory)</span>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <label>⏱️ Batch Delay (ms)</label>
-                    <input type="range" id="batchDelay" min="0" max="500" step="10" value="50">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="range-value" id="batchDelayValue">50</span>
-                        <span class="range-info">Delay between batches (0 = fastest)</span>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <label>🔄 Parsing Mode</label>
-                    <select id="parsingMode">
-                        <option value="fast">⚡ Fast (basic parsing)</option>
-                        <option value="balanced" selected>⚖️ Balanced (recommended)</option>
-                        <option value="strict">🔍 Strict (thorough, slower)</option>
-                    </select>
-                    <span class="range-info">Balance between speed and accuracy</span>
-                </div>
-
-                <div class="setting-item">
-                    <label>💾 Max Results in Memory</label>
-                    <input type="range" id="maxResults" min="100" max="10000" step="100" value="5000">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="range-value" id="maxResultsValue">5000</span>
-                        <span class="range-info">Keep top N results (saves RAM)</span>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <label>📈 Show Live Preview</label>
-                    <select id="livePreview">
-                        <option value="true" selected>✅ Yes (slower)</option>
-                        <option value="false">❌ No (faster)</option>
-                    </select>
-                    <span class="range-info">Update table in real-time</span>
-                </div>
-
-                <div class="setting-item">
-                    <label>💡 Scoring Threshold</label>
-                    <select id="scoringMode">
-                        <option value="strict">🔴 Strict (≥75 accept)</option>
-                        <option value="balanced" selected>🟡 Balanced (≥65 accept)</option>
-                        <option value="lenient">🟢 Lenient (≥55 accept)</option>
-                    </select>
-                    <span class="range-info">Classification threshold</span>
-                </div>
-            </div>
-
             <!-- Upload Area -->
             <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                 <p style="font-size: 2em;">📁</p>
@@ -599,10 +423,8 @@
             </div>
 
             <p style="color: #666; margin-top: 15px; font-size: 0.9em;">
-                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com</code> hoặc <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com:password</code> (một dòng một email)
+                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">https://mail.google.com/mail/u/0/#inbox dangthesang@gmail.com:nguyensang123</code> (one per line)
             </p>
-
-            <div id="fileInfo" class="file-info" style="display: none;"></div>
 
             <!-- Messages -->
             <div id="message" class="message"></div>
@@ -612,7 +434,7 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <div class="progress-text" id="progressText">Chuẩn bị...</div>
+                <div class="progress-text" id="progressText">Preparing...</div>
             </div>
 
             <!-- Stats -->
@@ -647,7 +469,7 @@
             <div class="button-group" id="buttonGroup" style="display: none;">
                 <button class="btn btn-primary" id="processBtn" onclick="processFile()">
                     <span class="spinner" style="display: none;" id="processSpinner"></span>
-                    <span id="processBtnText">🚀 Bắt Đầu Lọc</span>
+                    <span id="processBtnText">🚀 Start Processing</span>
                 </button>
                 <button class="btn btn-success" id="downloadAcceptBtn" onclick="downloadAccept()" style="display: none;">⬇️ Download Vietnamese</button>
                 <button class="btn btn-success" id="downloadReviewBtn" onclick="downloadReview()" style="display: none;">⬇️ Download Possible</button>
@@ -661,7 +483,6 @@
                     <thead>
                         <tr>
                             <th>Email</th>
-                            <th>Parse</th>
                             <th>Score</th>
                             <th>Status</th>
                         </tr>
@@ -672,17 +493,7 @@
             </div>
         </div>
 
-        <!-- Tab 2: Test Email -->
-        <div id="test" class="content">
-            <h2>🧪 Test Single Email</h2>
-            <div class="test-input">
-                <input type="text" id="testEmail" placeholder="Enter email (e.g., nguyen.van.huy@gmail.com)" value="">
-                <button class="btn btn-primary" onclick="testEmail()" style="flex: 0 0 auto;">Test</button>
-            </div>
-            <div id="testResult" class="test-result" style="display: none;"></div>
-        </div>
-
-        <!-- Tab 3: Statistics -->
+        <!-- Tab 2: Statistics -->
         <div id="stats" class="content">
             <h2>📊 Processing Statistics</h2>
             <div class="stats-grid">
@@ -704,140 +515,20 @@
                 </div>
             </div>
             <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                <h3 style="color: #667eea; margin-bottom: 15px;">Performance Benchmarks:</h3>
+                <h3 style="color: #667eea; margin-bottom: 15px;">✨ Features:</h3>
                 <p style="color: #666; line-height: 1.8;">
-                    <strong>Chunk Size 100:</strong> ~500 entries/second<br>
-                    <strong>Chunk Size 500:</strong> ~1000 entries/second<br>
-                    <strong>Chunk Size 1000:</strong> ~1500 entries/second<br>
-                    <strong>Batch Delay 0ms:</strong> Maximum speed<br>
-                    <strong>Batch Delay 50ms:</strong> Balanced (recommended)<br>
-                    <strong>Fast Mode:</strong> 2x faster, lower accuracy<br>
-                    <strong>Strict Mode:</strong> 2x slower, higher accuracy
+                    <strong>✅ Extract emails from URLs</strong><br>
+                    <strong>✅ Classify Vietnamese names</strong><br>
+                    <strong>✅ High performance processing</strong><br>
+                    <strong>✅ Download results as TXT</strong><br>
+                    <strong>✅ Support large files</strong><br>
+                    <strong>✅ Real-time progress tracking</strong>
                 </p>
-            </div>
-        </div>
-
-        <!-- Tab 4: Dataset Info -->
-        <div id="dataset" class="content">
-            <h2>📚 Dataset Information</h2>
-            <div class="dataset-list">
-                <div class="dataset-card">
-                    <h3>🏛️ STRICT_MIDDLE</h3>
-                    <p>High-confidence middle name tokens (grammar-defining)</p>
-                    <div class="dataset-count">19 tokens</div>
-                    <p style="margin-top: 10px; font-size: 0.85em; color: #999;">van, thi, huu, ngoc, cong, quoc, the, phu, duy, nhat, gia, bao, nhu, kim, nhi, uyen, loan, truc, tram</p>
-                </div>
-
-                <div class="dataset-card">
-                    <h3>⚡ DUAL_ROLE</h3>
-                    <p>Ambiguous tokens (middle or given)</p>
-                    <div class="dataset-count">15 tokens</div>
-                    <p style="margin-top: 10px; font-size: 0.85em; color: #999;">minh, quang, anh, linh, duc, huy, thanh, bao, viet, hai, khanh, hoa, trang, thao, phuong</p>
-                </div>
-
-                <div class="dataset-card">
-                    <h3>👤 STRICT_GIVEN</h3>
-                    <p>High-confidence given name tokens</p>
-                    <div class="dataset-count">47 tokens</div>
-                    <p style="margin-top: 10px; font-size: 0.85em; color: #999;">hieu, kiet, vinh, loc, dat, dung, ha, hiep, huong, ky, lam, long, luong, nam, nhan, phat, quy, sang, son, tai, tam, thinh, thuan, tien, tin, toan, tung, vy, xuan, yen, chi, hanh, diem, diep, dinh, dong, giang, giao, hai, hang, hao, hau, hien, hinh, hong, huyen</p>
-                </div>
-
-                <div class="dataset-card">
-                    <h3>👨‍👩‍👧‍👦 SURNAMES_STRONG</h3>
-                    <p>High-confidence Vietnamese surnames</p>
-                    <div class="dataset-count">102 tokens</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab 5: Settings -->
-        <div id="settings" class="content">
-            <h2>⚙️ Advanced Settings</h2>
-            <div class="settings-grid">
-                <div class="setting-item">
-                    <label>Parser Optimization</label>
-                    <select id="optimizationLevel">
-                        <option value="speed">⚡ Speed (minimum parsing)</option>
-                        <option value="balanced" selected>⚖️ Balanced</option>
-                        <option value="accuracy">🎯 Accuracy (thorough parsing)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <label>Email Validation</label>
-                    <select id="emailValidation">
-                        <option value="strict" selected>🔒 Strict RFC 5322</option>
-                        <option value="relaxed">📧 Relaxed (common formats)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <label>Name Pattern Matching</label>
-                    <select id="patternMatching">
-                        <option value="exact">= Exact</option>
-                        <option value="fuzzy" selected>~ Fuzzy (typo tolerant)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <label>Scoring Algorithm</label>
-                    <select id="scoringAlgorithm">
-                        <option value="grammar" selected>Grammar-Based (v13.1)</option>
-                        <option value="legacy">Legacy (v12.0)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <label>Auto-Save Results</label>
-                    <select id="autoSave">
-                        <option value="true" selected>✅ Yes (every 100 entries)</option>
-                        <option value="false">❌ No (manual download)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <label>Debug Mode</label>
-                    <select id="debugMode">
-                        <option value="false" selected>❌ Disabled</option>
-                        <option value="true">✅ Enabled (console logs)</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 20px;">💾 Save Settings</button>
-            <button class="btn btn-secondary" onclick="resetSettings()" style="margin-top: 20px;">🔄 Reset to Defaults</button>
-
-            <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-top: 30px;">
-                <h3 style="color: #667eea; margin-bottom: 15px;">⚡ Performance Tips:</h3>
-                <ul style="color: #666; line-height: 2;">
-                    <li>✅ For 10K+ entries: Use Chunk Size 500-1000</li>
-                    <li>✅ For laptop/mobile: Use Chunk Size 100-200</li>
-                    <li>✅ For real-time: Use Batch Delay 0ms</li>
-                    <li>✅ For memory saving: Use Max Results 1000-2000</li>
-                    <li>✅ For speed: Use Fast Mode + disable Live Preview</li>
-                    <li>✅ For accuracy: Use Strict Mode + Balanced threshold</li>
-                </ul>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ PERFORMANCE SETTINGS ============
-        let performanceSettings = {
-            chunkSize: 100,
-            batchDelay: 50,
-            parsingMode: 'balanced',
-            maxResults: 5000,
-            livePreview: true,
-            scoringMode: 'balanced',
-            optimizationLevel: 'balanced',
-            emailValidation: 'strict',
-            patternMatching: 'fuzzy',
-            scoringAlgorithm: 'grammar',
-            autoSave: true,
-            debugMode: false
-        };
-
         // ============ VIETNAMESE NAME DATASETS ============
         const STRICT_MIDDLE = new Set([
             'van', 'thi', 'huu', 'ngoc', 'cong', 'quoc', 'the', 'phu', 'duy',
@@ -859,15 +550,14 @@
 
         const VN_SURNAMES_STRONG = new Set([
             'nguyen', 'tran', 'pham', 'hoang', 'dang', 'bui', 'do', 'vo', 'vu', 'ngo', 'duong',
-            'ly', 'vu', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
-            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'ta', 'tran', 'bach', 'cam',
-            'cao', 'chau', 'chi', 'chu', 'chua', 'co', 'cung', 'cu', 'cuong', 'dach', 'dam',
-            'dao', 'dau', 'day', 'deo', 'di', 'diem', 'dieu', 'dinh', 'dong', 'dung', 'duong',
-            'ea', 'em', 'fa', 'gia', 'giao', 'go', 'gon', 'gum', 'guo', 'han', 'hang', 'hao',
-            'hat', 'hau', 'hay', 'hem', 'hen', 'heo', 'hhe', 'hieu', 'hieu', 'ho', 'hoa', 'hoai',
-            'hoan', 'hoat', 'hoc', 'hoi', 'hom', 'hon', 'hoo', 'hop', 'hot', 'hou', 'hoy', 'hu',
-            'hua', 'huai', 'huan', 'huang', 'huap', 'huat', 'huc', 'hue', 'hueh', 'huen', 'huer',
-            'hues', 'huet', 'hui'
+            'ly', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
+            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'bach', 'cam', 'cao', 'chau',
+            'chi', 'chu', 'chua', 'co', 'cung', 'cu', 'cuong', 'dach', 'dam', 'dao', 'dau',
+            'day', 'deo', 'di', 'diem', 'dieu', 'dong', 'dung', 'ea', 'em', 'fa', 'gia',
+            'giao', 'go', 'gon', 'gum', 'guo', 'hang', 'hao', 'hat', 'hau', 'hay', 'hem',
+            'hen', 'heo', 'hieu', 'ho', 'hoa', 'hoai', 'hoan', 'hoat', 'hoc', 'hoi', 'hom',
+            'hon', 'hop', 'hot', 'hou', 'hoy', 'hu', 'hua', 'huai', 'huan', 'huang', 'huap',
+            'huat', 'huc', 'hue', 'huen', 'huer', 'hues', 'huet', 'hui'
         ]);
 
         const TOKEN_RARITY = {
@@ -880,22 +570,17 @@
             'thuan': 0.65, 'tien': 0.5, 'vy': 0.6, 'xuan': 0.55, 'chi': 0.4
         };
 
-        // ============ EMAIL EXTRACTION AND VALIDATION ============
+        // ============ EMAIL EXTRACTION ============
         function extractEmailFromLine(line) {
-            // Regex để trích xuất email từ bất kỳ dòng nào
+            // Regex để tìm email trong dòng
             const emailRegex = /([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i;
             const match = line.match(emailRegex);
             return match ? match[1].toLowerCase().trim() : null;
         }
 
+        // ============ EMAIL VALIDATION ============
         function isValidEmail(email) {
-            if (!email) return false;
-            
-            if (performanceSettings.emailValidation === 'relaxed') {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            }
-            
-            const rfc5322 = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
+            const rfc5322 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return rfc5322.test(email);
         }
 
@@ -933,7 +618,6 @@
             const results = [];
             const seen = new Set();
 
-            // Try STRICT_MIDDLE tokens
             for (const token of STRICT_MIDDLE) {
                 if (remainder.startsWith(token)) {
                     const subRemainder = remainder.slice(token.length);
@@ -952,7 +636,6 @@
                 }
             }
 
-            // Try DUAL_ROLE tokens
             for (const token of DUAL_ROLE) {
                 if (remainder.startsWith(token)) {
                     const subRemainder = remainder.slice(token.length);
@@ -964,14 +647,13 @@
                             const sig = parse.join('|');
                             if (!seen.has(sig)) {
                                 seen.add(sig);
-                                results.push([parse, subTokens.length > 0 ? 'has_dual' : 'has_dual']);
+                                results.push([parse, 'has_dual']);
                             }
                         }
                     }
                 }
             }
 
-            // Try STRICT_GIVEN tokens
             for (const token of STRICT_GIVEN) {
                 if (remainder.startsWith(token)) {
                     const subRemainder = remainder.slice(token.length);
@@ -1032,8 +714,7 @@
                     email,
                     classification: 'reject',
                     score: 0,
-                    reason: 'Invalid email format',
-                    parse: 'N/A'
+                    reason: 'Invalid email format'
                 };
             }
 
@@ -1041,10 +722,8 @@
             const tokens = tokenizeLocalPart(localPart);
 
             let bestScore = -100;
-            let bestParse = '';
             let bestClass = 'reject';
 
-            // Try each surname
             for (const surname of VN_SURNAMES_STRONG) {
                 if (!localPart.startsWith(surname)) continue;
 
@@ -1056,14 +735,14 @@
                     
                     if (score > bestScore) {
                         bestScore = score;
-                        bestParse = surname + (parseTokens.length > 0 ? ' → ' + parseTokens.join(' → ') : '');
 
-                        if (performanceSettings.scoringMode === 'strict') {
-                            bestClass = score >= 75 ? 'accept' : (score >= 55 ? 'review' : 'reject');
-                        } else if (performanceSettings.scoringMode === 'balanced') {
-                            bestClass = score >= 65 ? 'accept' : (score >= 45 ? 'review' : 'reject');
+                        // Phân loại dựa trên score
+                        if (score >= 65) {
+                            bestClass = 'accept';
+                        } else if (score >= 45) {
+                            bestClass = 'review';
                         } else {
-                            bestClass = score >= 55 ? 'accept' : (score >= 35 ? 'review' : 'reject');
+                            bestClass = 'reject';
                         }
                     }
                 }
@@ -1073,7 +752,6 @@
                 email,
                 classification: bestClass,
                 score: Math.round(bestScore * 100) / 100,
-                parse: bestParse || 'No match',
                 reason: bestScore > 0 ? 'OK' : 'No surname match'
             };
         }
@@ -1086,34 +764,6 @@
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
-
-        // Update performance settings values
-        document.getElementById('chunkSize')?.addEventListener('input', (e) => {
-            document.getElementById('chunkSizeValue').textContent = e.target.value;
-            performanceSettings.chunkSize = parseInt(e.target.value);
-        });
-
-        document.getElementById('batchDelay')?.addEventListener('input', (e) => {
-            document.getElementById('batchDelayValue').textContent = e.target.value;
-            performanceSettings.batchDelay = parseInt(e.target.value);
-        });
-
-        document.getElementById('maxResults')?.addEventListener('input', (e) => {
-            document.getElementById('maxResultsValue').textContent = e.target.value;
-            performanceSettings.maxResults = parseInt(e.target.value);
-        });
-
-        document.getElementById('parsingMode')?.addEventListener('change', (e) => {
-            performanceSettings.parsingMode = e.target.value;
-        });
-
-        document.getElementById('livePreview')?.addEventListener('change', (e) => {
-            performanceSettings.livePreview = e.target.value === 'true';
-        });
-
-        document.getElementById('scoringMode')?.addEventListener('change', (e) => {
-            performanceSettings.scoringMode = e.target.value;
-        });
 
         // File upload handling
         function handleDragOver(e) {
@@ -1135,13 +785,12 @@
                 const file = files[0];
 
                 if (!file.name.toLowerCase().endsWith('.txt')) {
-                    showMessage('❌ Chỉ hỗ trợ file .txt', 'error');
+                    showMessage('❌ Only .txt files are supported', 'error');
                     return;
                 }
 
                 selectedFile = file;
                 showMessage(`✅ File selected: ${file.name}`, 'success');
-                showFileInfo(file);
                 document.getElementById('buttonGroup').style.display = 'flex';
             }
         }
@@ -1151,7 +800,7 @@
             if (!file) return;
 
             if (!file.name.toLowerCase().endsWith('.txt')) {
-                showMessage('❌ Chỉ hỗ trợ file .txt', 'error');
+                showMessage('❌ Only .txt files are supported', 'error');
                 e.target.value = '';
                 selectedFile = null;
                 return;
@@ -1159,16 +808,7 @@
 
             selectedFile = file;
             showMessage(`✅ File selected: ${file.name}`, 'success');
-            showFileInfo(file);
             document.getElementById('buttonGroup').style.display = 'flex';
-        }
-
-        function showFileInfo(file) {
-            const sizeKB = (file.size / 1024).toFixed(2);
-            const dateModified = new Date(file.lastModified).toLocaleString();
-            const infoHtml = `📄 File: ${file.name} | Size: ${sizeKB} KB | Modified: ${dateModified}`;
-            document.getElementById('fileInfo').innerHTML = infoHtml;
-            document.getElementById('fileInfo').style.display = 'block';
         }
 
         function showMessage(text, type = 'info') {
@@ -1180,16 +820,16 @@
 
         let allResults = [];
         let selectedFile = null;
-        let currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
+        let currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
 
         async function processFile() {
-            const file = selectedFile || document.getElementById('fileInput').files[0];
-            if (!file) {
-                showMessage('❌ Please select a file', 'error');
-                return;
-            }
-
             try {
+                const file = selectedFile || document.getElementById('fileInput').files[0];
+                if (!file) {
+                    showMessage('❌ Please select a file', 'error');
+                    return;
+                }
+
                 const text = await file.text();
                 const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
 
@@ -1199,55 +839,41 @@
                 }
 
                 allResults = [];
-                currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
+                currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
 
                 document.getElementById('progressContainer').style.display = 'block';
                 document.getElementById('processBtn').disabled = true;
                 document.getElementById('processSpinner').style.display = 'inline-block';
                 document.getElementById('processBtnText').textContent = 'Processing...';
-                document.getElementById('downloadAcceptBtn').style.display = 'none';
-                document.getElementById('downloadReviewBtn').style.display = 'none';
 
                 const startTime = Date.now();
-                const chunkSize = performanceSettings.chunkSize;
-                const batchDelay = performanceSettings.batchDelay;
 
-                // Process lines in chunks
-                for (let i = 0; i < lines.length; i += chunkSize) {
-                    const chunk = lines.slice(i, i + chunkSize);
+                // Process all lines
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
                     
-                    for (const line of chunk) {
-                        // Extract email from line
-                        const email = extractEmailFromLine(line);
-                        
-                        if (!email) {
-                            if (performanceSettings.debugMode) {
-                                console.log('No email found in line:', line);
-                            }
-                            continue;
-                        }
+                    // Trích xuất email từ dòng
+                    const email = extractEmailFromLine(line);
+                    
+                    if (!email) continue; // Bỏ qua nếu không tìm thấy email
 
-                        currentStats.extracted++;
+                    // Phân loại email
+                    const result = classifyEmail(email);
+                    allResults.push(result);
 
-                        // Classify email
-                        const result = classifyEmail(email);
-                        allResults.push(result);
+                    currentStats.total++;
+                    currentStats[result.classification]++;
 
-                        currentStats.total++;
-                        currentStats[result.classification]++;
-
-                        if (performanceSettings.livePreview && currentStats.total % 10 === 0) {
-                            updateStatsDisplay();
-                            updateResultsPreview();
-                        }
-                    }
-
-                    updateProgress(currentStats.extracted, lines.length);
-
-                    if (i + chunkSize < lines.length) {
-                        await new Promise(resolve => setTimeout(resolve, batchDelay));
+                    // Update progress
+                    if (currentStats.total % 100 === 0) {
+                        updateProgress(currentStats.total, lines.length);
+                        updateResultsPreview();
+                        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
                     }
                 }
+
+                // Final update
+                updateProgress(currentStats.total, lines.length);
 
                 const endTime = Date.now();
                 const timeSeconds = ((endTime - startTime) / 1000).toFixed(2);
@@ -1260,35 +886,27 @@
                 updateResultsPreview();
 
                 // Show download buttons
-                if (currentStats.accept > 0) {
-                    document.getElementById('downloadAcceptBtn').style.display = 'flex';
-                }
-                if (currentStats.review > 0) {
-                    document.getElementById('downloadReviewBtn').style.display = 'flex';
-                }
+                document.getElementById('downloadAcceptBtn').style.display = 'flex';
+                document.getElementById('downloadReviewBtn').style.display = 'flex';
 
                 document.getElementById('processBtn').disabled = false;
                 document.getElementById('processSpinner').style.display = 'none';
-                document.getElementById('processBtnText').textContent = '✅ Processing Complete!';
+                document.getElementById('processBtnText').textContent = '✅ Complete!';
 
-                showMessage(`✅ Processed ${currentStats.extracted} lines, found ${currentStats.total} emails in ${timeSeconds}s`, 'success');
-
-                if (performanceSettings.debugMode) {
-                    console.log('Processing complete:', currentStats);
-                }
+                showMessage(`✅ Processed ${currentStats.total} emails in ${timeSeconds}s`, 'success');
             } catch (error) {
+                console.error('Error:', error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
                 document.getElementById('processBtn').disabled = false;
                 document.getElementById('processSpinner').style.display = 'none';
-                document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
-                showMessage(`❌ Error: ${error.message}`, 'error');
-                console.error('Processing error:', error);
+                document.getElementById('processBtnText').textContent = '🚀 Start Processing';
             }
         }
 
         function updateProgress(current, total) {
             const percent = (current / total) * 100;
             document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = `Scanning: ${current}/${total} (${Math.round(percent)}%)`;
+            document.getElementById('progressText').textContent = `Processing: ${current}/${total} (${Math.round(percent)}%)`;
         }
 
         function updateStatsDisplay() {
@@ -1309,7 +927,6 @@
                 const badgeClass = `badge badge-${result.classification}`;
                 tr.innerHTML = `
                     <td>${result.email}</td>
-                    <td><small>${result.parse}</small></td>
                     <td><strong>${result.score}</strong></td>
                     <td><span class="${badgeClass}">${result.classification.toUpperCase()}</span></td>
                 `;
@@ -1333,121 +950,34 @@
                 return;
             }
 
-            // Format: email:score
+            // Format: email:score (one per line)
             const content = results.map(r => `${r.email}:${r.score}`).join('\n');
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `vietnamese-names-${type}-${Date.now()}.txt`;
+            a.download = `vietnamese-names-${type}-${new Date().getTime()}.txt`;
             a.click();
             URL.revokeObjectURL(url);
 
-            showMessage(`✅ Downloaded ${results.length} ${type} emails`, 'success');
+            showMessage(`✅ Downloaded ${results.length} ${type} results`, 'success');
         }
 
         function resetUpload() {
             selectedFile = null;
             document.getElementById('fileInput').value = '';
             allResults = [];
-            currentStats = { accept: 0, review: 0, reject: 0, total: 0, extracted: 0 };
+            currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
             document.getElementById('progressContainer').style.display = 'none';
             document.getElementById('statsContainer').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'none';
-            document.getElementById('fileInfo').style.display = 'none';
-            document.getElementById('processBtn').disabled = false;
-            document.getElementById('processSpinner').style.display = 'none';
-            document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
             document.getElementById('downloadAcceptBtn').style.display = 'none';
             document.getElementById('downloadReviewBtn').style.display = 'none';
+            document.getElementById('processBtn').disabled = false;
+            document.getElementById('processSpinner').style.display = 'none';
+            document.getElementById('processBtnText').textContent = '🚀 Start Processing';
             showMessage('🔄 Reset complete', 'info');
         }
-
-        function testEmail() {
-            const email = document.getElementById('testEmail').value.trim();
-            if (!email) {
-                showMessage('❌ Please enter an email', 'error');
-                return;
-            }
-
-            const result = classifyEmail(email);
-            const resultDiv = document.getElementById('testResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `
-                <div class="result-item ${result.classification}">
-                    <div class="result-label">📧 Email:</div>
-                    <div class="result-value">${result.email}</div>
-                    
-                    <div class="result-label" style="margin-top: 10px;">🏷️ Classification:</div>
-                    <div class="result-value"><span class="badge badge-${result.classification}">${result.classification.toUpperCase()}</span></div>
-                    
-                    <div class="result-label" style="margin-top: 10px;">⭐ Score:</div>
-                    <div class="result-value"><strong>${result.score}/100</strong></div>
-                    
-                    <div class="result-label" style="margin-top: 10px;">🔍 Parse:</div>
-                    <div class="result-value">${result.parse}</div>
-                    
-                    <div class="result-label" style="margin-top: 10px;">ℹ️ Reason:</div>
-                    <div class="result-value">${result.reason}</div>
-                </div>
-            `;
-        }
-
-        function saveSettings() {
-            performanceSettings.optimizationLevel = document.getElementById('optimizationLevel')?.value || 'balanced';
-            performanceSettings.emailValidation = document.getElementById('emailValidation')?.value || 'strict';
-            performanceSettings.patternMatching = document.getElementById('patternMatching')?.value || 'fuzzy';
-            performanceSettings.scoringAlgorithm = document.getElementById('scoringAlgorithm')?.value || 'grammar';
-            performanceSettings.autoSave = document.getElementById('autoSave')?.value === 'true';
-            performanceSettings.debugMode = document.getElementById('debugMode')?.value === 'true';
-
-            localStorage.setItem('performanceSettings', JSON.stringify(performanceSettings));
-            showMessage('✅ Settings saved!', 'success');
-        }
-
-        function resetSettings() {
-            performanceSettings = {
-                chunkSize: 100,
-                batchDelay: 50,
-                parsingMode: 'balanced',
-                maxResults: 5000,
-                livePreview: true,
-                scoringMode: 'balanced',
-                optimizationLevel: 'balanced',
-                emailValidation: 'strict',
-                patternMatching: 'fuzzy',
-                scoringAlgorithm: 'grammar',
-                autoSave: true,
-                debugMode: false
-            };
-
-            document.getElementById('chunkSize').value = 100;
-            document.getElementById('chunkSizeValue').textContent = '100';
-            document.getElementById('batchDelay').value = 50;
-            document.getElementById('batchDelayValue').textContent = '50';
-            document.getElementById('maxResults').value = 5000;
-            document.getElementById('maxResultsValue').textContent = '5000';
-            document.getElementById('parsingMode').value = 'balanced';
-            document.getElementById('livePreview').value = 'true';
-            document.getElementById('scoringMode').value = 'balanced';
-
-            localStorage.removeItem('performanceSettings');
-            showMessage('✅ Settings reset to defaults', 'success');
-        }
-
-        // Load settings on startup
-        window.addEventListener('load', () => {
-            const saved = localStorage.getItem('performanceSettings');
-            if (saved) {
-                performanceSettings = JSON.parse(saved);
-                document.getElementById('chunkSize').value = performanceSettings.chunkSize;
-                document.getElementById('chunkSizeValue').textContent = performanceSettings.chunkSize;
-                document.getElementById('batchDelay').value = performanceSettings.batchDelay;
-                document.getElementById('batchDelayValue').textContent = performanceSettings.batchDelay;
-                document.getElementById('maxResults').value = performanceSettings.maxResults;
-                document.getElementById('maxResultsValue').textContent = performanceSettings.maxResults;
-            }
-        });
     </script>
 </body>
 </html>
