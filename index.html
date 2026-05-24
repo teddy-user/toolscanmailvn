@@ -589,7 +589,7 @@
             </div>
 
             <p style="color: #666; margin-top: 15px; font-size: 0.9em;">
-                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com:password</code> (one per line)
+                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com</code> or <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com:password</code> (one per line)
             </p>
 
             <!-- Messages -->
@@ -1157,8 +1157,10 @@
                 return;
             }
 
+            // Read file content
             const text = await file.text();
-            const entries = text.split('\n').filter(l => l.trim());
+            // Split by newline and filter empty lines
+            const entries = text.split(/\r?\n/).filter(l => l.trim().length > 0);
 
             if (entries.length === 0) {
                 showMessage('❌ File is empty', 'error');
@@ -1177,47 +1179,58 @@
             const chunkSize = performanceSettings.chunkSize;
             const batchDelay = performanceSettings.batchDelay;
 
-            for (let i = 0; i < entries.length; i += chunkSize) {
-                const chunk = entries.slice(i, i + chunkSize);
-                
-                for (const entry of chunk) {
-                    const [email, password] = entry.split(':');
-                    if (!email) continue;
+            try {
+                for (let i = 0; i < entries.length; i += chunkSize) {
+                    const chunk = entries.slice(i, i + chunkSize);
+                    
+                    for (const entry of chunk) {
+                        // Extract email from "email@domain.com" or "email@domain.com:password"
+                        const email = entry.split(':')[0].trim();
+                        
+                        // Skip empty entries
+                        if (!email || email.length === 0) continue;
 
-                    const result = classifyEmail(email.trim());
-                    allResults.push(result);
+                        const result = classifyEmail(email);
+                        allResults.push(result);
 
-                    currentStats.total++;
-                    currentStats[result.classification]++;
+                        currentStats.total++;
+                        currentStats[result.classification]++;
 
-                    if (performanceSettings.livePreview && currentStats.total % 10 === 0) {
-                        updateStatsDisplay();
-                        updateResultsPreview();
+                        if (performanceSettings.livePreview && currentStats.total % 10 === 0) {
+                            updateStatsDisplay();
+                            updateResultsPreview();
+                        }
+                    }
+
+                    updateProgress(currentStats.total, entries.length);
+
+                    if (i + chunkSize < entries.length) {
+                        await new Promise(resolve => setTimeout(resolve, batchDelay));
                     }
                 }
 
-                updateProgress(currentStats.total, entries.length);
+                const endTime = Date.now();
+                const timeSeconds = ((endTime - startTime) / 1000).toFixed(2);
+                const speed = (currentStats.total / timeSeconds).toFixed(0);
 
-                if (i + chunkSize < entries.length) {
-                    await new Promise(resolve => setTimeout(resolve, batchDelay));
-                }
+                document.getElementById('statTime').textContent = timeSeconds;
+                document.getElementById('statSpeed').textContent = speed + '/s';
+
+                updateStatsDisplay();
+                updateResultsPreview();
+
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('processSpinner').style.display = 'none';
+                document.getElementById('processBtnText').textContent = '✅ Processing Complete!';
+
+                showMessage(`✅ Processed ${currentStats.total} emails in ${timeSeconds}s`, 'success');
+            } catch (error) {
+                console.error('Error processing file:', error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('processSpinner').style.display = 'none';
+                document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
             }
-
-            const endTime = Date.now();
-            const timeSeconds = ((endTime - startTime) / 1000).toFixed(2);
-            const speed = (entries.length / timeSeconds).toFixed(0);
-
-            document.getElementById('statTime').textContent = timeSeconds;
-            document.getElementById('statSpeed').textContent = speed + '/s';
-
-            updateStatsDisplay();
-            updateResultsPreview();
-
-            document.getElementById('processBtn').disabled = false;
-            document.getElementById('processSpinner').style.display = 'none';
-            document.getElementById('processBtnText').textContent = '✅ Processing Complete!';
-
-            showMessage(`✅ Processed ${entries.length} entries in ${timeSeconds}s`, 'success');
         }
 
         function updateProgress(current, total) {
