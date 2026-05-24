@@ -581,11 +581,11 @@
             </div>
 
             <!-- Upload Area -->
-            <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                 <p style="font-size: 2em;">📁</p>
                 <p><strong>Drag & drop file here</strong></p>
                 <p style="font-size: 0.9em;">or click to select</p>
-                <input type="file" id="fileInput" accept=".txt" onchange="handleFileSelect(event)">
+                <input type="file" id="fileInput" accept=".txt,text/plain" onchange="handleFileSelect(event)">
             </div>
 
             <p style="color: #666; margin-top: 15px; font-size: 0.9em;">
@@ -1105,11 +1105,21 @@
 
         function handleDrop(e) {
             e.preventDefault();
+            e.stopPropagation();
             document.getElementById('uploadArea').classList.remove('dragover');
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                document.getElementById('fileInput').files = files;
-                handleFileSelect({ target: document.getElementById('fileInput') });
+                const file = files[0];
+
+                if (!file.name.toLowerCase().endsWith('.txt')) {
+                    showMessage('❌ Chỉ hỗ trợ file .txt', 'error');
+                    return;
+                }
+
+                selectedFile = file;
+                showMessage(`✅ File selected: ${file.name}`, 'success');
+                document.getElementById('buttonGroup').style.display = 'flex';
             }
         }
 
@@ -1117,6 +1127,14 @@
             const file = e.target.files[0];
             if (!file) return;
 
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                showMessage('❌ Chỉ hỗ trợ file .txt', 'error');
+                e.target.value = '';
+                selectedFile = null;
+                return;
+            }
+
+            selectedFile = file;
             showMessage(`✅ File selected: ${file.name}`, 'success');
             document.getElementById('buttonGroup').style.display = 'flex';
         }
@@ -1129,10 +1147,11 @@
         }
 
         let allResults = [];
+        let selectedFile = null;
         let currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
 
         async function processFile() {
-            const file = document.getElementById('fileInput').files[0];
+            const file = selectedFile || document.getElementById('fileInput').files[0];
             if (!file) {
                 showMessage('❌ Please select a file', 'error');
                 return;
@@ -1261,6 +1280,7 @@
         }
 
         function resetUpload() {
+            selectedFile = null;
             document.getElementById('fileInput').value = '';
             allResults = [];
             currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
