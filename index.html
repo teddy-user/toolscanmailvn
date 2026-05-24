@@ -589,7 +589,8 @@
             </div>
 
             <p style="color: #666; margin-top: 15px; font-size: 0.9em;">
-                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com</code> or <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">email@domain.com:password</code> (one per line)
+                ℹ️ File format: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">URL email@domain.com:password</code> (one per line)<br>
+                ℹ️ Ví dụ: <code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">https://mail.google.com/mail/u/0/#inbox dangthesang@gmail.com:nguyensang123</code>
             </p>
 
             <!-- Messages -->
@@ -847,14 +848,14 @@
 
         const VN_SURNAMES_STRONG = new Set([
             'nguyen', 'tran', 'pham', 'hoang', 'dang', 'bui', 'do', 'vo', 'vu', 'ngo', 'duong',
-            'ly', 'vu', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
-            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'ta', 'tran', 'bach', 'cam',
+            'ly', 'dinh', 'han', 'ha', 'ta', 'mac', 'phan', 'can', 'kieu', 'tao', 'quynh',
+            'truong', 'huynh', 'mai', 'thai', 'le', 'phu', 'pho', 'bach', 'cam',
             'cao', 'chau', 'chi', 'chu', 'chua', 'co', 'cung', 'cu', 'cuong', 'dach', 'dam',
-            'dao', 'dau', 'day', 'deo', 'di', 'diem', 'dieu', 'dinh', 'dong', 'dung', 'duong',
-            'ea', 'em', 'fa', 'gia', 'giao', 'go', 'gon', 'gum', 'guo', 'han', 'hang', 'hao',
-            'hat', 'hau', 'hay', 'hem', 'hen', 'heo', 'hhe', 'hieu', 'hieu', 'ho', 'hoa', 'hoai',
+            'dao', 'dau', 'day', 'deo', 'di', 'diem', 'dieu', 'dong', 'dung',
+            'ea', 'em', 'fa', 'gia', 'giao', 'go', 'gon', 'gum', 'guo', 'hang', 'hao',
+            'hat', 'hau', 'hay', 'hem', 'hen', 'heo', 'hieu', 'ho', 'hoa', 'hoai',
             'hoan', 'hoat', 'hoc', 'hoi', 'hom', 'hon', 'hoo', 'hop', 'hot', 'hou', 'hoy', 'hu',
-            'hua', 'huai', 'huan', 'huang', 'huap', 'huat', 'huc', 'hue', 'hueh', 'huen', 'huer',
+            'hua', 'huai', 'huan', 'huang', 'huap', 'huat', 'huc', 'hue', 'huen', 'huer',
             'hues', 'huet', 'hui'
         ]);
 
@@ -867,6 +868,15 @@
             'vinh': 0.65, 'loc': 0.7, 'hieu': 0.6, 'hiep': 0.7, 'huong': 0.45, 'sang': 0.5,
             'thuan': 0.65, 'tien': 0.5, 'vy': 0.6, 'xuan': 0.55, 'chi': 0.4
         };
+
+        // ============ EMAIL EXTRACTION FROM LINE ============
+        function extractEmailFromLine(line) {
+            // Format: URL email@domain.com:password
+            // Tìm email trong dòng
+            const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i;
+            const match = line.match(emailRegex);
+            return match ? match[1].trim() : null;
+        }
 
         // ============ EMAIL VALIDATION ============
         function isValidEmail(email) {
@@ -1151,44 +1161,46 @@
         let currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
 
         async function processFile() {
-            const file = selectedFile || document.getElementById('fileInput').files[0];
-            if (!file) {
-                showMessage('❌ Please select a file', 'error');
-                return;
-            }
-
-            // Read file content
-            const text = await file.text();
-            // Split by newline and filter empty lines
-            const entries = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-
-            if (entries.length === 0) {
-                showMessage('❌ File is empty', 'error');
-                return;
-            }
-
-            allResults = [];
-            currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
-
-            document.getElementById('progressContainer').style.display = 'block';
-            document.getElementById('processBtn').disabled = true;
-            document.getElementById('processSpinner').style.display = 'inline-block';
-            document.getElementById('processBtnText').textContent = 'Processing...';
-
-            const startTime = Date.now();
-            const chunkSize = performanceSettings.chunkSize;
-            const batchDelay = performanceSettings.batchDelay;
-
             try {
-                for (let i = 0; i < entries.length; i += chunkSize) {
-                    const chunk = entries.slice(i, i + chunkSize);
+                const file = selectedFile || document.getElementById('fileInput').files[0];
+                if (!file) {
+                    showMessage('❌ Please select a file', 'error');
+                    return;
+                }
+
+                const text = await file.text();
+                const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+
+                if (lines.length === 0) {
+                    showMessage('❌ File is empty', 'error');
+                    return;
+                }
+
+                allResults = [];
+                currentStats = { accept: 0, review: 0, reject: 0, total: 0 };
+
+                document.getElementById('progressContainer').style.display = 'block';
+                document.getElementById('processBtn').disabled = true;
+                document.getElementById('processSpinner').style.display = 'inline-block';
+                document.getElementById('processBtnText').textContent = 'Processing...';
+
+                const startTime = Date.now();
+                const chunkSize = performanceSettings.chunkSize;
+                const batchDelay = performanceSettings.batchDelay;
+
+                for (let i = 0; i < lines.length; i += chunkSize) {
+                    const chunk = lines.slice(i, i + chunkSize);
                     
-                    for (const entry of chunk) {
-                        // Extract email from "email@domain.com" or "email@domain.com:password"
-                        const email = entry.split(':')[0].trim();
+                    for (const line of chunk) {
+                        // Extract email từ line
+                        const email = extractEmailFromLine(line);
                         
-                        // Skip empty entries
-                        if (!email || email.length === 0) continue;
+                        if (!email) {
+                            if (performanceSettings.debugMode) {
+                                console.log('❌ Could not extract email from:', line);
+                            }
+                            continue;
+                        }
 
                         const result = classifyEmail(email);
                         allResults.push(result);
@@ -1202,16 +1214,16 @@
                         }
                     }
 
-                    updateProgress(currentStats.total, entries.length);
+                    updateProgress(currentStats.total, lines.length);
 
-                    if (i + chunkSize < entries.length) {
+                    if (i + chunkSize < lines.length) {
                         await new Promise(resolve => setTimeout(resolve, batchDelay));
                     }
                 }
 
                 const endTime = Date.now();
                 const timeSeconds = ((endTime - startTime) / 1000).toFixed(2);
-                const speed = (currentStats.total / timeSeconds).toFixed(0);
+                const speed = currentStats.total > 0 ? (currentStats.total / timeSeconds).toFixed(0) : 0;
 
                 document.getElementById('statTime').textContent = timeSeconds;
                 document.getElementById('statSpeed').textContent = speed + '/s';
@@ -1225,16 +1237,16 @@
 
                 showMessage(`✅ Processed ${currentStats.total} emails in ${timeSeconds}s`, 'success');
             } catch (error) {
-                console.error('Error processing file:', error);
                 showMessage(`❌ Error: ${error.message}`, 'error');
                 document.getElementById('processBtn').disabled = false;
                 document.getElementById('processSpinner').style.display = 'none';
                 document.getElementById('processBtnText').textContent = '🚀 Bắt Đầu Lọc';
+                console.error('Processing error:', error);
             }
         }
 
         function updateProgress(current, total) {
-            const percent = (current / total) * 100;
+            const percent = total > 0 ? (current / total) * 100 : 0;
             document.getElementById('progressFill').style.width = percent + '%';
             document.getElementById('progressText').textContent = `Processing: ${current}/${total} (${Math.round(percent)}%)`;
         }
