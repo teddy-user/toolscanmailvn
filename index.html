@@ -1,1239 +1,586 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vietnamese Email Filter - ULTRA FAST</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1f2d3d 0%, #2c3e50 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-            margin: 5px 0;
-        }
-
-        .header .target-domains {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 13px;
-            color: #2ecc71;
-        }
-
-        .header .blacklist {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .content {
-            padding: 40px 30px;
-        }
-
-        .section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, #ede7ff 0%, #e8dcff 100%);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.dragover {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, #ede7ff 0%, #e8dcff 100%);
-            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.2);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .upload-text {
-            font-size: 16px;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .upload-subtext {
-            font-size: 13px;
-            color: #7f8c8d;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .file-info {
-            margin-top: 15px;
-            padding: 15px;
-            background: #ecf7ff;
-            border-left: 4px solid #3498db;
-            border-radius: 8px;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        .file-info.show {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .file-info-text {
-            font-size: 13px;
-            color: #2c3e50;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .info-card h3 {
-            font-size: 14px;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .info-card ul {
-            list-style: none;
-            font-size: 12px;
-            color: #555;
-            line-height: 1.8;
-        }
-
-        .info-card ul li {
-            margin-bottom: 5px;
-        }
-
-        .examples-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .example-card {
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 12px;
-            border-left: 4px solid;
-        }
-
-        .example-card.accepted {
-            background: #ecfef0;
-            border-left-color: #27ae60;
-        }
-
-        .example-card.rejected {
-            background: #fef3f0;
-            border-left-color: #e74c3c;
-        }
-
-        .example-card h4 {
-            margin-bottom: 10px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .example-card.accepted h4 {
-            color: #27ae60;
-        }
-
-        .example-card.rejected h4 {
-            color: #e74c3c;
-        }
-
-        .example-item {
-            margin: 5px 0;
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-            color: #333;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 200px;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-success:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
-        }
-
-        .btn-download {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-        }
-
-        .btn-download:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .progress-section {
-            display: none;
-            margin-bottom: 30px;
-        }
-
-        .progress-section.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #ecf0f1;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 10px;
-        }
-
-        .progress-text {
-            font-size: 13px;
-            color: #7f8c8d;
-            text-align: center;
-        }
-
-        .status-text {
-            font-size: 14px;
-            color: #e67e22;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-
-        .results-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .results-section.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-
-        .breakdown-item {
-            background: #f5f7ff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-            font-size: 12px;
-        }
-
-        .breakdown-label {
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-
-        .breakdown-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-icon {
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .modal-text {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            flex: 1;
-        }
-
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .modal-btn-secondary {
-            background: #ecf0f1;
-            color: #2c3e50;
-            flex: 1;
-        }
-
-        .modal-btn-secondary:hover {
-            background: #d5dbdb;
-        }
-
-        .detection-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .method-card {
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-            padding: 18px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            font-size: 12px;
-        }
-
-        .method-card h4 {
-            color: #667eea;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .method-desc {
-            color: #555;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-
-        .method-confidence {
-            color: #27ae60;
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .debug-info {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 12px;
-            color: #333;
-            display: none;
-        }
-
-        .debug-info.show {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .section-title {
-                font-size: 16px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                min-width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .modal-content {
-                padding: 20px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vietnamese Email Detector PRO v4 - Ultimate</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Segoe UI,Tahoma,Verdana,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px;color:#111827}
+.container{max-width:1200px;margin:auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.28);overflow:hidden}
+.header{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;text-align:center;padding:34px 22px}
+.header h1{font-size:30px;margin-bottom:10px}
+.header p{font-size:14px;opacity:.9;line-height:1.6}
+.badge{display:inline-block;margin-top:12px;padding:8px 14px;border-radius:999px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.45);color:#86efac;font-weight:900;font-size:13px}
+.content{padding:30px}
+.section{margin-bottom:25px}
+.section-title{font-size:18px;font-weight:900;margin-bottom:14px}
+.upload{border:3px dashed #667eea;background:#f5f7ff;border-radius:16px;padding:42px 18px;text-align:center;cursor:pointer;transition:.2s}
+.upload:hover,.upload.drag{background:#eef2ff;border-color:#764ba2;transform:translateY(-1px)}
+.upload-icon{font-size:52px;margin-bottom:10px}
+.upload-main{font-size:18px;font-weight:900}
+.upload-sub{font-size:13px;color:#6b7280;margin-top:7px;line-height:1.6}
+#fileInput{display:none}
+.file-info{display:none;margin-top:12px;background:#eff6ff;border-left:4px solid #3b82f6;padding:14px;border-radius:10px;font-size:13px}
+.file-info.show{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
+.card label{display:block;color:#4f46e5;font-weight:900;font-size:14px;margin-bottom:8px}
+.card input,.card select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:14px}
+.help{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.45}
+.buttons{display:flex;gap:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:900;cursor:pointer;transition:.2s;flex:1;min-width:220px}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.success{display:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.progress-wrap{display:none}
+.progress-wrap.show{display:block}
+.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#667eea,#764ba2);transition:.15s}
+.progress-text{margin-top:10px;text-align:center;color:#6b7280;font-size:13px}
+.stats{display:none;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stats.show{display:grid}
+.stat{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:14px;padding:20px;text-align:center}
+.stat-value{font-size:28px;font-weight:900;margin-bottom:4px}
+.stat-label{font-size:12px;opacity:.9}
+.preview{display:none;margin-top:15px;background:#111827;color:#d1fae5;padding:16px;border-radius:14px;font-family:Consolas,monospace;font-size:12px;white-space:pre-wrap;max-height:330px;overflow:auto}
+.preview.show{display:block}
+.logic{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.logic-card{background:#f9fafb;border-left:4px solid #667eea;border-radius:12px;padding:14px;font-size:13px;line-height:1.55}
+.logic-card b{color:#4f46e5}
+.warn{background:#fff7ed;border-left-color:#f97316}
+.tab-buttons{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{padding:10px 16px;border:none;border-radius:10px;background:#e5e7eb;cursor:pointer;font-weight:900;font-size:13px;transition:.2s}
+.tab-btn.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+@media(max-width:768px){.header h1{font-size:23px}.content{padding:22px}.btn{min-width:100%}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <h1>🚀 VIETNAMESE EMAIL FILTER - ULTRA FAST</h1>
-            <p>6 Phương Pháp Phát Hiện + Loại Bỏ Từ Nước Ngoài</p>
-            <div class="target-domains">
-                ✅ Target: @gmail.com | @yahoo.com | @outlook.com | @yahoo.com.vn | @hotmail.com
-            </div>
-            <div class="blacklist">
-                ❌ Blacklist: mac, man, mau, sa, sam, som, ta, tom, top, tong, yum
-            </div>
-        </div>
+<div class="container">
+<div class="header">
+<h1>🇻🇳 Vietnamese Email Detector PRO v4</h1>
+<p>Lọc email Việt từ url:email:pass. Output: email:pass với độ tin cậy cao. Tối ưu algorithm v4.</p>
+<div class="badge">Output: email:password|score|confidence</div>
+</div>
 
-        <!-- CONTENT -->
-        <div class="content">
-            <!-- UPLOAD SECTION -->
-            <div class="section">
-                <div class="section-title">📂 INPUT FILE</div>
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Kéo thả file hoặc click để chọn</div>
-                    <div class="upload-subtext">Hỗ trợ: .txt, .csv, .log (Format: email:password)</div>
-                </div>
-                <div class="file-info" id="fileInfo">
-                    <div class="file-info-text">
-                        📄 <strong id="fileName"></strong> | 
-                        📊 <strong id="fileSize"></strong>
-                    </div>
-                </div>
-                <input type="file" id="fileInput" accept=".txt,.csv,.log">
-                <div class="debug-info" id="debugInfo"></div>
-            </div>
+<div class="content">
+<div class="section">
+<div class="section-title">📂 Input</div>
+<div class="upload" id="uploadArea">
+<div class="upload-icon">📁</div>
+<div class="upload-main">Kéo thả file hoặc click để chọn</div>
+<div class="upload-sub">Hỗ trợ .txt/.csv/.log. Format: URL email:pass hoặc email:pass. Sẽ giữ lại email:pass nếu email được xác định Việt.</div>
+</div>
+<input id="fileInput" type="file" accept=".txt,.csv,.log">
+<div class="file-info" id="fileInfo"></div>
+</div>
 
-            <!-- 6 DETECTION METHODS -->
-            <div class="section">
-                <div class="section-title">��� 6 PHƯƠNG PHÁP PHÁT HIỆN</div>
-                <div class="detection-methods">
-                    <div class="method-card">
-                        <h4>1️⃣ Direct Surname Match</h4>
-                        <div class="method-desc">Kiểm tra họ trực tiếp trong danh sách họ Việt chính thức</div>
-                        <div class="method-confidence">Độ tin: 95%</div>
-                    </div>
-                    <div class="method-card">
-                        <h4>2️⃣ Compound Name</h4>
-                        <div class="method-desc">Phát hiện tên viết liền: họ+tên (nguyenminh, tranvanduc)</div>
-                        <div class="method-confidence">Độ tin: 85-95%</div>
-                    </div>
-                    <div class="method-card">
-                        <h4>3️⃣ Token Combination</h4>
-                        <div class="method-desc">Kiểm tra tổ hợp token: họ + tên đệm/tên (nguyen.hoang.minh)</div>
-                        <div class="method-confidence">Độ tin: 80-90%</div>
-                    </div>
-                    <div class="method-card">
-                        <h4>4️⃣ Pattern Analysis</h4>
-                        <div class="method-desc">Phân tích pattern ngôn ngữ: tỷ lệ nguyên âm, cụm từ Việt</div>
-                        <div class="method-confidence">Độ tin: 70-85%</div>
-                    </div>
-                    <div class="method-card">
-                        <h4>5️⃣ Statistical Analysis</h4>
-                        <div class="method-desc">Phân tích thống kê: tỷ lệ chữ, số, ký tự đặc biệt</div>
-                        <div class="method-confidence">Độ tin: 70%</div>
-                    </div>
-                    <div class="method-card">
-                        <h4>6️⃣ Multi-Source Confirmation</h4>
-                        <div class="method-desc">Xác nhận từ nhiều nguồn khác nhau (score >= 2)</div>
-                        <div class="method-confidence">Độ tin: 75-85%</div>
-                    </div>
-                </div>
-            </div>
+<div class="section">
+<div class="section-title">⚙️ Cấu hình tối ưu</div>
+<div class="grid">
+<div class="card">
+<label>Min score</label>
+<input id="minScore" type="number" min="1" max="100" value="78">
+<div class="help">Mặc định 78. Email phải đạt điểm này để được output.</div>
+</div>
+<div class="card">
+<label>Mode</label>
+<select id="strictMode">
+<option value="very_strict" selected>Very Strict - tối ưu nhất</option>
+<option value="strict">Strict</option>
+<option value="balanced">Balanced</option>
+</select>
+<div class="help">Very Strict: họ Việt + tên Việt rõ ràng. Strict: 1 họ Việt + 1 tín hiệu. Balanced: 2 tín hiệu bất kỳ.</div>
+</div>
+<div class="card">
+<label>Domain Mode</label>
+<select id="domainMode">
+<option value="popular" selected>Domain phổ biến</option>
+<option value="all">Mọi domain</option>
+</select>
+<div class="help">Domain phổ biến cộng điểm nhẹ nhàng.</div>
+</div>
+<div class="card">
+<label>Chunk size</label>
+<input id="chunkSize" type="number" min="1000" max="500000" value="100000">
+<div class="help">Tăng nếu máy mạnh, giảm nếu máy yếu.</div>
+</div>
+</div>
+</div>
 
-            <!-- EXAMPLES -->
-            <div class="section">
-                <div class="section-title">✅ ACCEPTED vs ❌ REJECTED</div>
-                <div class="examples-grid">
-                    <div class="example-card accepted">
-                        <h4>✅ ACCEPTED EXAMPLES</h4>
-                        <div class="example-item">nguyen.hoang@gmail.com:pass123</div>
-                        <div class="example-item">nguyenminh@yahoo.com:password456</div>
-                        <div class="example-item">tran.van.duc@outlook.com:secret789</div>
-                        <div class="example-item">phamduytuan@gmail.com:pass2024</div>
-                    </div>
-                    <div class="example-card rejected">
-                        <h4>❌ REJECTED EXAMPLES</h4>
-                        <div class="example-item">mac@gmail.com:pass123 (blacklist)</div>
-                        <div class="example-item">man.xyz@gmail.com:password456 (blacklist)</div>
-                        <div class="example-item">sam.test@yahoo.com:secret789 (blacklist)</div>
-                        <div class="example-item">top123@outlook.com:pass2024 (blacklist)</div>
-                    </div>
-                </div>
-            </div>
+<div class="section">
+<div class="buttons">
+<button class="btn primary" id="startBtn" disabled>🚀 Detect & Filter VN Email</button>
+<button class="btn success" id="downloadBtn">⬇️ Download vn_email_pass.txt</button>
+</div>
+</div>
 
-            <!-- BUTTONS -->
-            <div class="section">
-                <div class="button-group">
-                    <button class="btn btn-primary" id="startBtn" disabled>
-                        🚀 START SCAN (COMBO + FILTER)
-                    </button>
-                    <button class="btn btn-download" id="downloadBtn" style="display: none;">
-                        ⬇️ DOWNLOAD RESULTS (vnoutput.txt)
-                    </button>
-                </div>
-            </div>
+<div class="section progress-wrap" id="progressWrap">
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="progress-text" id="progressText">Chuẩn bị...</div>
+</div>
 
-            <!-- PROGRESS SECTION -->
-            <div class="progress-section" id="progressSection">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">Chuẩn bị...</div>
-                <div class="status-text" id="statusText"></div>
-            </div>
+<div class="section">
+<div class="stats" id="stats">
+<div class="stat"><div class="stat-value" id="totalLines">0</div><div class="stat-label">TOTAL LINES</div></div>
+<div class="stat"><div class="stat-value" id="emailFound">0</div><div class="stat-label">EMAIL FOUND</div></div>
+<div class="stat"><div class="stat-value" id="vnDetected">0</div><div class="stat-label">VN DETECTED</div></div>
+<div class="stat"><div class="stat-value" id="speed">0</div><div class="stat-label">LINES/SEC</div></div>
+</div>
 
-            <!-- RESULTS SECTION -->
-            <div class="results-section" id="resultsSection">
-                <div class="section-title">📊 KẾT QUẢ QUÉT</div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalInput">0</div>
-                        <div class="stat-label">TỔNG INPUT</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="validVN">0</div>
-                        <div class="stat-label">VALID VIETNAMESE</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="rejected">0</div>
-                        <div class="stat-label">REJECTED</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="speed">0</div>
-                        <div class="stat-label">SPEED (K/sec)</div>
-                    </div>
-                </div>
+<div class="tab-buttons">
+<button class="tab-btn active" onclick="switchTab('preview')">📋 Preview Results</button>
+<button class="tab-btn" onclick="switchTab('debug')">🔍 Debug Log</button>
+</div>
 
-                <div class="section-title" style="margin-top: 30px;">BREAKDOWN BY METHOD:</div>
-                <div class="breakdown-grid">
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Compound</div>
-                        <div class="breakdown-value" id="breakdownCompound">0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Token</div>
-                        <div class="breakdown-value" id="breakdownToken">0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Pattern</div>
-                        <div class="breakdown-value" id="breakdownPattern">0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Surname Only</div>
-                        <div class="breakdown-value" id="breakdownSurname">0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Multi-Confirm</div>
-                        <div class="breakdown-value" id="breakdownMulti">0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Pattern+Stat</div>
-                        <div class="breakdown-value" id="breakdownPatternStat">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="preview tab-content active" id="preview"></div>
+<div class="preview tab-content" id="debug"></div>
+</div>
 
-    <!-- MODALS -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="modal-icon">✅</div>
-            <div class="modal-title">SCAN HOÀN TẤT!</div>
-            <div class="modal-text" id="successText"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" onclick="downloadResults()">
-                    ⬇️ Download vnoutput.txt
-                </button>
-                <button class="modal-btn modal-btn-secondary" onclick="closeModal('successModal')">
-                    Đóng
-                </button>
-            </div>
-        </div>
-    </div>
+<div class="section">
+<div class="section-title">🧠 Algorithm v4 - Tối ưu hóa</div>
+<div class="logic">
+<div class="logic-card"><b>Họ Việt mạnh:</b> +38 điểm (nguyen, tran, pham, hoang, huynh, phan, vu, v.v.)</div>
+<div class="logic-card"><b>Tên Việt:</b> +18 điểm mỗi token (van, thi, duc, minh, thanh, v.v.)</div>
+<div class="logic-card"><b>Họ ghép tên:</b> +40-50 điểm (nguyenvan, phamthi, v.v.)</div>
+<div class="logic-card"><b>Ratio vowel OK:</b> +4 điểm (32%-70% là hợp lý)</div>
+<div class="logic-card warn"><b>Output an toàn:</b> Chỉ xuất email:password, score, confidence. Không xuất chi tiết khác.</div>
+</div>
+</div>
+</div>
+</div>
 
-    <div class="modal" id="errorModal">
-        <div class="modal-content">
-            <div class="modal-icon">❌</div>
-            <div class="modal-title">LỖI!</div>
-            <div class="modal-text" id="errorText"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" onclick="closeModal('errorModal')">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
+<script>
+let selectedFile = null;
+let outputRows = [];
+let debugLog = [];
 
-    <script>
-        let selectedFile = null;
-        let scanResults = null;
+function addDebug(msg){
+    debugLog.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    if(debugLog.length > 500) debugLog.shift();
+}
 
-        // ============================================================
-        // FILE UPLOAD
-        // ============================================================
+function switchTab(tab){
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+}
 
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const startBtn = document.getElementById('startBtn');
+const POPULAR_DOMAINS = new Set([
+'gmail.com','yahoo.com','yahoo.com.vn','outlook.com','hotmail.com','icloud.com','proton.me','protonmail.com',
+'mail.com','aol.com','zoho.com','yandex.com','mail.ru','sina.com','qq.com','163.com','126.com'
+]);
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+const SURNAME_STRONG = new Set([
+'nguyen','tran','pham','hoang','huynh','phan','vu','vo','dang','bui','truong','ngo','duong','dinh','doan','trinh',
+'mai','cao','luu','lam','dao','thai','chau','ton','van','ha','chu','bach','luong','kieu','phung','quach','ung','trieu',
+'mac','lu','ma','ong','kiem','thach','nhan','dung','huong','phuong','hoa','ha','tran','ly','khanh','duc','tuan',
+'hung','vinh','dat','loc','quoc','nam','long','hai','tung','kien','toan','tri','tin','linh','son','giang','nam',
+'quang','thuy','hien','han','yen','an','binh','khanh','khoa','phuoc','thien','tai','thang','thinh','quan','xuan'
+]);
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+const SURNAME_SHORT_AMBIGUOUS = new Set(['le','do','ho','ly','ta','to','la','at','an','on']);
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+const SURNAME_WEAK = new Set([
+'son','giang','nam','quang','thuy','phuong','hoa','hong','hien','han','nhan','yen'
+]);
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            handleFileSelect(e.dataTransfer.files);
-        });
+const VN_NAMES = new Set([
+'van','thi','duc','huu','minh','ngoc','thanh','quang','xuan','hoang','anh','bao','gia','nhat','duy','cong','tuan','tien',
+'huy','trung','phu','phuc','hoai','nhu','kim','the','quoc','nam','hung','cuong','son','long','hai','vinh','dat','loc',
+'viet','lam','binh','khanh','khoa','phuoc','thien','tai','thang','thinh','quan','tung','kien','toan','tri','tin','linh',
+'hoa','trang','yen','nhung','quynh','giang','thuy','thao','tuyet','huyen','phuong','chi','nhi','uyen','trinh','loan',
+'hanh','diem','dung','thu','nga','oanh','truc','tram','hien','hue','vy','my','ha','mai','lan','nha','kiet','nhan','ngan',
+'nhat','nghia','nghi','duyen','huong','nhien','khue','mi','tien','yen','thy','thuong','tu','tuong','hieu','hiep','nhut',
+'khanh','phuong','thao','thuy','huong','giang','linh','uyen','trinh','hang','trang','dung','hien','thien','quynh','nhung',
+'oanh','lan','chi','nhi','loan','hanh','truc','tram','diem','na','vi','huong','tuong','tuyet','thu','nga','vy','my','kiet'
+]);
 
-        fileInput.addEventListener('change', (e) => {
-            handleFileSelect(e.target.files);
-        });
+const BAD_PREFIX = new Set([
+'admin','administrator','support','help','contact','info','test','demo','user','account','mail','email','marketing','sales',
+'service','root','null','none','unknown','abc','abcd','qwerty','asdf','zxcv','webmaster','security','billing','office',
+'career','jobs','hr','noreply','no-reply','robot','bot','shop','store','payment','invoice','order','notification','alert',
+'system','server','backup','archive','temp','cache','log','data','file','backup','guest','visitor','anonymous'
+]);
 
-        function handleFileSelect(files) {
-            if (files.length === 0) return;
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const fileInfo = document.getElementById('fileInfo');
+const startBtn = document.getElementById('startBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 
-            selectedFile = files[0];
-            document.getElementById('fileName').textContent = selectedFile.name;
-            document.getElementById('fileSize').textContent = formatFileSize(selectedFile.size);
-            fileInfo.classList.add('show');
-            startBtn.disabled = false;
-        }
+uploadArea.onclick = () => fileInput.click();
+uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('drag'); };
+uploadArea.ondragleave = () => uploadArea.classList.remove('drag');
+uploadArea.ondrop = e => { e.preventDefault(); uploadArea.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); };
+fileInput.onchange = e => handleFile(e.target.files[0]);
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
+function handleFile(file){
+    if(!file) return;
+    selectedFile = file;
+    fileInfo.classList.add('show');
+    fileInfo.innerHTML = `📄 <b>${escapeHtml(file.name)}</b> | 📦 ${formatSize(file.size)}`;
+    startBtn.disabled = false;
+    debugLog = [];
+    addDebug(`File selected: ${file.name} (${formatSize(file.size)})`);
+}
 
-        // ============================================================
-        // EMAIL EXTRACTION (FIXED)
-        // ============================================================
+function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-        function extractEmailsAndPasswords(text) {
-            const entries = [];
-            const lines = text.split(/\r?\n/);
-            const seen = new Set();
+function formatSize(bytes){
+    if(!bytes) return '0 Bytes';
+    const k = 1024, sizes = ['Bytes','KB','MB','GB'];
+    const i = Math.floor(Math.log(bytes)/Math.log(k));
+    return (bytes/Math.pow(k,i)).toFixed(2)+' '+sizes[i];
+}
 
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) continue;
-
-                // Find @ symbol to locate email start
-                const atIndex = line.lastIndexOf('@');
-                if (atIndex === -1) continue;
-
-                // Find first : after @ for password separator
-                const colonIndex = line.indexOf(':', atIndex);
-                if (colonIndex === -1) continue;
-
-                const email = line.substring(0, colonIndex).trim().toLowerCase();
-                const password = line.substring(colonIndex + 1).trim();
-
-                // Validate email format
-                if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24}$/.test(email)) {
-                    continue;
+function extractEmailAndPass(line){
+    try {
+        const trimmed = String(line).trim();
+        if(!trimmed) return null;
+        
+        const emailRegex = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24}/;
+        const emailMatch = trimmed.match(emailRegex);
+        if(!emailMatch) return null;
+        
+        const email = emailMatch[0].toLowerCase();
+        const emailIdx = trimmed.indexOf(emailMatch[0]);
+        
+        let password = '';
+        if(trimmed.includes(':') && emailIdx !== -1){
+            const afterEmail = trimmed.substring(emailIdx + email.length);
+            if(afterEmail.startsWith(':')){
+                password = afterEmail.substring(1).split(/[\s|]/)[0].trim();
+            } else {
+                const colonIdx = trimmed.lastIndexOf(':');
+                if(colonIdx > emailIdx){
+                    password = trimmed.substring(colonIdx + 1).split(/[\s|]/)[0].trim();
                 }
-
-                // Validate password
-                if (password.length < 1 || password.length > 256) continue;
-                if (/\s/.test(password)) continue; // No spaces in password
-
-                // Check for duplicates
-                if (seen.has(email)) continue;
-
-                entries.push({
-                    email: email,
-                    password: password,
-                    original: `${email}:${password}`
-                });
-                seen.add(email);
             }
+        }
+        
+        return { email, password: password || 'unknown' };
+    } catch(e) {
+        return null;
+    }
+}
 
-            return entries;
+function alphaOf(local){
+    return local.replace(/[^a-z]/gi,'').toLowerCase();
+}
+
+function tokensOf(local){
+    return local.toLowerCase()
+        .split(/[._\-+0-9]+/)
+        .map(x => x.replace(/[^a-z]/g,''))
+        .filter(x => x.length > 0);
+}
+
+function isBadRandom(alpha){
+    if(alpha.length < 12) return false;
+    const uniqueRatio = new Set(alpha).size / alpha.length;
+    const vowels = (alpha.match(/[aeiouy]/g) || []).length;
+    const vr = vowels / alpha.length;
+    return uniqueRatio > 0.78 || vr < 0.22 || vr > 0.78;
+}
+
+function confidenceFromScore(score){
+    if(score >= 90) return 'VERY_HIGH';
+    if(score >= 85) return 'HIGH';
+    if(score >= 78) return 'CONFIDENT';
+    if(score >= 70) return 'LIKELY';
+    return 'LOW';
+}
+
+function scoreEmail(email, domainMode, strictMode){
+    try {
+        const parts = email.split('@');
+        if(parts.length !== 2) return {score:0, pass:false, reason:'invalid_format'};
+
+        const local = parts[0];
+        const domain = parts[1];
+
+        if(domainMode === 'popular' && !POPULAR_DOMAINS.has(domain)){
+            return {score:0, pass:false, reason:'domain_not_popular'};
         }
 
-        // ============================================================
-        // VIETNAMESE NAME DATA
-        // ============================================================
+        const alpha = alphaOf(local);
+        const tokens = tokensOf(local);
+        const first = tokens[0] || alpha;
 
-        const VN_SURNAMES_MAIN = new Set([
-            'nguyen', 'tran', 'pham', 'hoang', 'huynh', 'phan', 'truong', 'duong', 'dang', 'dinh',
-            'bui', 'ngo', 'doan', 'vo', 'vu', 'le', 'do', 'ho', 'ly', 'cao', 'chau', 'ha', 'kieu',
-            'la', 'luong', 'mai', 'ta', 'luu', 'thai', 'bach', 'vuong', 'chi', 'chu'
-        ]);
+        if(alpha.length < 5) return {score:0, pass:false, reason:'local_too_short'};
+        if(BAD_PREFIX.has(first) || BAD_PREFIX.has(alpha)) return {score:0, pass:false, reason:'blacklist_prefix'};
+        if(isBadRandom(alpha)) return {score:0, pass:false, reason:'random_like'};
 
-        const VN_SURNAMES_SECONDARY = new Set([
-            'son', 'nam', 'phuong', 'quang', 'thuy', 'giang', 'hoa', 'huong', 'da', 'nhan',
-            'nhuong', 'vi', 've', 'va', 'y', 'to', 'so', 'on', 'tong', 'tom', 'top', 'yum',
-            'sam', 'som', 'sa', 'mau', 'man', 'mac'
-        ]);
+        let score = 0;
+        const reasons = [];
+        let signals = 0;
+        let hasStrongSurname = false;
+        let hasAmbiguousSurname = false;
+        let hasVNName = false;
+        let hasCompound = false;
 
-        const VN_STRONG_NAMES = new Set([
-            'van', 'thi', 'duc', 'huu', 'minh', 'ngoc', 'thanh', 'quang', 'xuan',
-            'hoang', 'anh', 'bao', 'gia', 'nhat', 'duy', 'cong', 'tuan', 'tien',
-            'huy', 'trung', 'phu', 'phuc', 'hoai', 'nhu', 'kim', 'the', 'quoc',
-            'nam', 'hung', 'cuong', 'son', 'long', 'hai', 'vinh', 'dat', 'loc',
-            'viet', 'lam', 'binh', 'khanh', 'khoa', 'phuoc', 'thien', 'tai',
-            'thang', 'thinh', 'quan', 'tung', 'kien', 'toan', 'tri', 'tin', 'linh',
-            'hoa', 'trang', 'yen', 'nhung', 'quynh', 'giang', 'thuy', 'thao',
-            'tuyet', 'huyen', 'phuong', 'chi', 'nhi', 'uyen', 'trinh', 'loan', 'hanh',
-            'diem', 'dung', 'thu', 'nga', 'oanh', 'truc', 'tram', 'hien', 'hue'
-        ]);
+        if(POPULAR_DOMAINS.has(domain)){
+            score += 2;
+            reasons.push('popular_domain');
+        }
 
-        const FOREIGN_WORDS_BLACKLIST = new Set([
-            'mac', 'man', 'mau', 'sa', 'sam', 'som', 'ta', 'tom', 'top', 'tong', 'yum'
-        ]);
+        if(SURNAME_STRONG.has(first)){
+            score += 40;
+            signals += 2;
+            hasStrongSurname = true;
+            reasons.push(`strong_surname_${first}`);
+        } else if(SURNAME_SHORT_AMBIGUOUS.has(first)){
+            score += 14;
+            signals++;
+            hasAmbiguousSurname = true;
+            reasons.push(`ambiguous_surname_${first}`);
+        } else if(SURNAME_WEAK.has(first)){
+            score += 16;
+            signals++;
+            reasons.push(`weak_vn_${first}`);
+        }
 
-        const TARGET_DOMAINS = new Set([
-            'gmail.com', 'yahoo.com', 'outlook.com', 'yahoo.com.vn', 'hotmail.com'
-        ]);
-
-        // ============================================================
-        // CLASSIFICATION LOGIC
-        // ============================================================
-
-        function classifyEmail(email) {
-            const [local, domain] = email.split('@');
-
-            // Check domain
-            if (!TARGET_DOMAINS.has(domain)) {
-                return { valid: false, layer: 'not_target', score: 0 };
-            }
-
-            const normalized = local.toLowerCase();
-            const alphaOnly = normalized.replace(/[^a-z]/g, '');
-
-            // Get first token (before . _ -)
-            let firstToken = '';
-            for (let char of normalized) {
-                if (char === '.' || char === '_' || char === '-') break;
-                if (/[a-z]/.test(char)) firstToken += char;
-            }
-
-            if (!firstToken) return { valid: false, layer: 'invalid', score: 0 };
-
-            // Check blacklist
-            if (FOREIGN_WORDS_BLACKLIST.has(firstToken)) {
-                return { valid: false, layer: 'blacklist', score: 0 };
-            }
-
-            let score = 0;
-            let layer = 'unknown';
-
-            // Method 1: Direct strong surname match
-            if (VN_SURNAMES_MAIN.has(firstToken)) {
-                score += 40;
-                layer = 'compound';
-            }
-            // Method 2: Secondary surname match
-            else if (VN_SURNAMES_SECONDARY.has(firstToken)) {
+        for(const t of tokens.slice(1)){
+            if(VN_NAMES.has(t)){
                 score += 20;
-                layer = 'token';
+                signals++;
+                hasVNName = true;
+                reasons.push(`vn_name_${t}`);
+                break;
             }
+        }
 
-            // Compound detection
-            if (score === 0 && alphaOnly.length >= 5) {
-                for (let sn of VN_SURNAMES_MAIN) {
-                    if (alphaOnly.startsWith(sn)) {
-                        const rest = alphaOnly.substring(sn.length);
-                        if (VN_STRONG_NAMES.has(rest) || 
-                            Array.from(VN_STRONG_NAMES).some(n => rest.startsWith(n))) {
-                            score += 35;
-                            layer = 'compound_multi';
-                            break;
-                        }
+        for(let i = 1; i < tokens.length; i++){
+            const t = tokens[i];
+            if(SURNAME_STRONG.has(t)){
+                score += 8;
+                signals++;
+                reasons.push(`surname_token_${t}`);
+            }
+        }
+
+        if(tokens.length >= 2 && signals >= 2){
+            score += 12;
+            reasons.push('multi_token_confirm');
+        }
+
+        const allSurnames = [...SURNAME_STRONG, ...SURNAME_SHORT_AMBIGUOUS];
+        for(const sn of allSurnames){
+            if(alpha.startsWith(sn) && alpha.length >= sn.length + 3){
+                const rest = alpha.slice(sn.length);
+                for(const name of VN_NAMES){
+                    if(rest.startsWith(name) || rest.includes(name)){
+                        const add = SURNAME_SHORT_AMBIGUOUS.has(sn) ? 35 : 48;
+                        score += add;
+                        signals += 3;
+                        hasCompound = true;
+                        hasVNName = true;
+                        if(SURNAME_STRONG.has(sn)) hasStrongSurname = true;
+                        reasons.push(`compound_${sn}${name}`);
+                        break;
                     }
                 }
-            }
-
-            // Pattern analysis - vowel ratio
-            if (score === 0) {
-                const vowels = (alphaOnly.match(/[aeiouy]/g) || []).length;
-                const vowelRatio = alphaOnly.length > 0 ? vowels / alphaOnly.length : 0;
-
-                if (vowelRatio > 0.35 && alphaOnly.length >= 4) {
-                    const hasVNPattern = /[aeiou]{2,}/.test(alphaOnly);
-                    if (hasVNPattern && VN_SURNAMES_MAIN.has(firstToken)) {
-                        score += 25;
-                        layer = 'pattern';
-                    }
-                }
-            }
-
-            // Token analysis
-            if (score === 0 && normalized.includes('.')) {
-                const tokens = normalized.split(/[._-]+/).filter(t => t);
-                let tokenScore = 0;
-
-                if (tokens.length >= 2 && VN_SURNAMES_MAIN.has(tokens[0])) {
-                    tokenScore += 30;
-                    
-                    for (let i = 1; i < tokens.length; i++) {
-                        if (VN_STRONG_NAMES.has(tokens[i])) {
-                            tokenScore += 15;
-                        }
-                    }
-                }
-
-                if (tokenScore > 0) {
-                    score = tokenScore;
-                    layer = 'token_combo';
-                }
-            }
-
-            const valid = score >= 20;
-            return { valid, layer, score };
-        }
-
-        // ============================================================
-        // SCAN PROCESSING
-        // ============================================================
-
-        document.getElementById('startBtn').addEventListener('click', startScan);
-
-        async function startScan() {
-            if (!selectedFile) {
-                showError('Vui lòng chọn file đầu vào!');
-                return;
-            }
-
-            showProgress();
-            const startTime = Date.now();
-
-            try {
-                const fileContent = await readFileAsText(selectedFile);
-                const entries = extractEmailsAndPasswords(fileContent);
-
-                if (entries.length === 0) {
-                    showError('❌ Không tìm thấy email:password trong file!\n\nFormat cần thiết:\nemail@domain.com:password\n\nVí dụ:\nguyen.minh@gmail.com:pass123\nhoang.tran@yahoo.com:secret456');
-                    hideProgress();
-                    return;
-                }
-
-                const results = await processBatch(entries);
-                const totalTime = (Date.now() - startTime) / 1000;
-
-                scanResults = {
-                    results: results.validEmails,
-                    stats: {
-                        total: entries.length,
-                        valid_vn: results.validCount,
-                        compound: results.breakdown.compound,
-                        token: results.breakdown.token,
-                        pattern: results.breakdown.pattern,
-                        surname_only: results.breakdown.surnameOnly,
-                        multi_confirm: results.breakdown.multiConfirm,
-                        pattern_stat: results.breakdown.patternStat,
-                        rejected: entries.length - results.validCount,
-                        speed: entries.length > 0 ? (entries.length / totalTime / 1000).toFixed(2) : 0,
-                        totalTime: totalTime.toFixed(2)
-                    }
-                };
-
-                displayResults(scanResults.stats);
-                showSuccess(scanResults.stats);
-                hideProgress();
-
-            } catch (error) {
-                console.error(error);
-                showError('❌ Lỗi xử lý file:\n\n' + error.message);
-                hideProgress();
+                if(hasCompound) break;
             }
         }
 
-        function readFileAsText(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = (e) => reject(new Error('Không thể đọc file'));
-                reader.readAsText(file, 'UTF-8');
-            });
+        const vowels = (alpha.match(/[aeiouy]/g) || []).length;
+        const vr = alpha.length > 0 ? vowels / alpha.length : 0;
+        if(vr >= 0.32 && vr <= 0.70){
+            score += 5;
+            reasons.push('vowel_ratio_ok');
         }
 
-        async function processBatch(entries) {
-            return new Promise((resolve) => {
-                const results = {
-                    validEmails: [],
-                    validCount: 0,
-                    breakdown: {
-                        compound: 0,
-                        token: 0,
-                        pattern: 0,
-                        surnameOnly: 0,
-                        multiConfirm: 0,
-                        patternStat: 0
-                    }
-                };
-
-                let processed = 0;
-                const total = entries.length;
-                const chunkSize = 50000;
-
-                const processChunk = () => {
-                    const endIdx = Math.min(processed + chunkSize, total);
-
-                    for (let i = processed; i < endIdx; i++) {
-                        const entry = entries[i];
-                        const classification = classifyEmail(entry.email);
-
-                        if (classification.valid) {
-                            results.validEmails.push(entry.original);
-                            results.validCount++;
-
-                            // Track breakdown
-                            if (classification.layer === 'compound' || classification.layer === 'compound_multi') {
-                                results.breakdown.compound++;
-                            } else if (classification.layer === 'token' || classification.layer === 'token_combo') {
-                                results.breakdown.token++;
-                            } else if (classification.layer === 'pattern') {
-                                results.breakdown.pattern++;
-                            } else if (classification.layer === 'surname_only') {
-                                results.breakdown.surnameOnly++;
-                            } else if (classification.layer === 'multi_confirm') {
-                                results.breakdown.multiConfirm++;
-                            } else if (classification.layer === 'pattern_stat') {
-                                results.breakdown.patternStat++;
-                            }
-                        }
-                    }
-
-                    processed = endIdx;
-                    const progress = Math.round((processed / total) * 100);
-                    updateProgress(progress, `Đã xử lý: ${processed.toLocaleString()}/${total.toLocaleString()} emails`);
-
-                    if (processed < total) {
-                        setTimeout(processChunk, 0);
-                    } else {
-                        resolve(results);
-                    }
-                };
-
-                processChunk();
-            });
+        if(alpha.length >= 6 && alpha.length <= 24){
+            score += 4;
+            reasons.push('length_ok');
         }
 
-        // ============================================================
-        // UI UPDATES
-        // ============================================================
-
-        function showProgress() {
-            document.getElementById('progressSection').classList.add('show');
-            updateProgress(0, 'Chuẩn bị...');
+        const digits = (local.match(/[0-9]/g) || []).length;
+        if(digits >= 5){
+            score -= 15;
+            reasons.push('many_digits');
+        }
+        if(local.length > 32){
+            score -= 12;
+            reasons.push('local_too_long');
         }
 
-        function hideProgress() {
-            document.getElementById('progressSection').classList.remove('show');
+        if(hasAmbiguousSurname && !hasVNName && !hasCompound){
+            score -= 25;
+            reasons.push('ambiguous_no_name');
         }
 
-        function updateProgress(value, text) {
-            document.getElementById('progressFill').style.width = value + '%';
-            document.getElementById('progressText').textContent = value + '%';
-            document.getElementById('statusText').textContent = text;
-        }
-
-        function displayResults(stats) {
-            document.getElementById('totalInput').textContent = stats.total.toLocaleString();
-            document.getElementById('validVN').textContent = stats.valid_vn.toLocaleString();
-            document.getElementById('rejected').textContent = stats.rejected.toLocaleString();
-            document.getElementById('speed').textContent = stats.speed;
-
-            document.getElementById('breakdownCompound').textContent = stats.compound;
-            document.getElementById('breakdownToken').textContent = stats.token;
-            document.getElementById('breakdownPattern').textContent = stats.pattern;
-            document.getElementById('breakdownSurname').textContent = stats.surname_only;
-            document.getElementById('breakdownMulti').textContent = stats.multi_confirm;
-            document.getElementById('breakdownPatternStat').textContent = stats.pattern_stat;
-
-            document.getElementById('resultsSection').classList.add('show');
-            document.getElementById('downloadBtn').style.display = 'flex';
-        }
-
-        function showSuccess(stats) {
-            const acceptRate = stats.total > 0 ? ((stats.valid_vn / stats.total) * 100).toFixed(2) : 0;
-            const text = `✅ SCAN HOÀN TẤT - COMBO LOGIC + FILTER!\n\n` +
-                `⚡ PERFORMANCE:\n` +
-                `   • Speed: ${stats.speed} K emails/sec\n` +
-                `   • Total Time: ${stats.totalTime}s\n` +
-                `   • Accept Rate: ${acceptRate}%\n\n` +
-                `📊 RESULTS:\n` +
-                `   • Input: ${stats.total.toLocaleString()}\n` +
-                `   • Valid Vietnamese: ${stats.valid_vn.toLocaleString()}\n` +
-                `      ├─ Compound: ${stats.compound.toLocaleString()}\n` +
-                `      ├─ Token: ${stats.token.toLocaleString()}\n` +
-                `      ├─ Pattern: ${stats.pattern.toLocaleString()}\n` +
-                `      ├─ Surname Only: ${stats.surname_only.toLocaleString()}\n` +
-                `      ├─ Multi-Confirm: ${stats.multi_confirm.toLocaleString()}\n` +
-                `      └─ Pattern+Stat: ${stats.pattern_stat.toLocaleString()}\n` +
-                `   • Rejected: ${stats.rejected.toLocaleString()}\n\n` +
-                `📥 Output: vnoutput.txt (${stats.valid_vn.toLocaleString()} dòng)`;
-
-            document.getElementById('successText').textContent = text;
-            openModal('successModal');
-        }
-
-        function showError(message) {
-            document.getElementById('errorText').textContent = message;
-            openModal('errorModal');
-        }
-
-        function openModal(id) {
-            document.getElementById(id).classList.add('show');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('show');
-        }
-
-        // ============================================================
-        // DOWNLOAD
-        // ============================================================
-
-        document.getElementById('downloadBtn').addEventListener('click', downloadResults);
-
-        function downloadResults() {
-            if (!scanResults || scanResults.results.length === 0) {
-                showError('Không có kết quả để tải xuống!');
-                return;
+        let structuralPass = false;
+        if(strictMode === 'very_strict'){
+            structuralPass = (
+                (hasCompound && hasStrongSurname) ||
+                (hasStrongSurname && hasVNName && signals >= 3) ||
+                (tokens.length >= 3 && signals >= 3 && hasVNName)
+            );
+            if(!structuralPass){
+                score -= 22;
+                reasons.push('very_strict_fail');
             }
-
-            const content = scanResults.results.join('\n');
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'vnoutput.txt';
-            link.click();
-            URL.revokeObjectURL(link.href);
+        } else if(strictMode === 'strict'){
+            structuralPass = (
+                hasCompound ||
+                (hasStrongSurname && (hasVNName || signals >= 2)) ||
+                (signals >= 2 && hasVNName)
+            );
+            if(!structuralPass){
+                score -= 14;
+                reasons.push('strict_fail');
+            }
+        } else {
+            structuralPass = (
+                hasCompound ||
+                hasStrongSurname ||
+                (signals >= 2 && hasVNName)
+            );
         }
 
-        // Close modals on backdrop click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
-        });
-    </script>
+        score = Math.max(0, Math.min(100, Math.round(score)));
+        return {
+            score,
+            pass: structuralPass,
+            confidence: confidenceFromScore(score),
+            reason: reasons.join('+')
+        };
+    } catch(e) {
+        return {score:0, pass:false, reason:'parse_error'};
+    }
+}
+
+function progress(p, text){
+    document.getElementById('progressWrap').classList.add('show');
+    document.getElementById('progressBar').style.width = p + '%';
+    document.getElementById('progressText').textContent = text;
+}
+
+startBtn.onclick = async () => {
+    if(!selectedFile) return;
+
+    outputRows = [];
+    downloadBtn.style.display = 'none';
+    document.getElementById('preview').classList.remove('show');
+    document.getElementById('stats').classList.remove('show');
+    debugLog = [];
+
+    const minScore = Math.max(1, Math.min(100, Number(document.getElementById('minScore').value) || 78));
+    const chunkSize = Math.max(1000, Number(document.getElementById('chunkSize').value) || 100000);
+    const domainMode = document.getElementById('domainMode').value;
+    const strictMode = document.getElementById('strictMode').value;
+
+    startBtn.disabled = true;
+    startBtn.textContent = '⏳ Đang xử lý...';
+
+    addDebug(`Starting detection with minScore=${minScore}, mode=${strictMode}, domain=${domainMode}`);
+
+    const started = performance.now();
+    const text = await selectedFile.text();
+    const lines = text.split(/\r?\n/);
+    const total = lines.length;
+    const seen = new Set();
+
+    let processed = 0, found = 0, valid = 0;
+
+    addDebug(`Total lines: ${total}`);
+
+    function runChunk(){
+        const end = Math.min(processed + chunkSize, total);
+
+        for(let i = processed; i < end; i++){
+            const line = lines[i];
+            const data = extractEmailAndPass(line);
+            
+            if(!data) continue;
+
+            const email = data.email;
+            found++;
+
+            if(seen.has(email)) continue;
+            seen.add(email);
+
+            const result = scoreEmail(email, domainMode, strictMode);
+
+            if(result.pass && result.score >= minScore){
+                outputRows.push({
+                    output: `${email}:${data.password}|${result.score}|${result.confidence}`,
+                    email,
+                    score: result.score,
+                    confidence: result.confidence,
+                    reason: result.reason,
+                    password: data.password
+                });
+                valid++;
+            }
+        }
+
+        processed = end;
+        const pct = total ? Math.round(processed / total * 100) : 100;
+        progress(pct, `Xử lý ${processed.toLocaleString()} / ${total.toLocaleString()} dòng (${valid} detected)`);
+
+        if(processed < total) setTimeout(runChunk, 0);
+        else finish();
+    }
+
+    function finish(){
+        const sec = Math.max(0.001, (performance.now() - started) / 1000);
+        const spd = Math.round(total / sec);
+
+        document.getElementById('stats').classList.add('show');
+        document.getElementById('totalLines').textContent = total.toLocaleString();
+        document.getElementById('emailFound').textContent = found.toLocaleString();
+        document.getElementById('vnDetected').textContent = valid.toLocaleString();
+        document.getElementById('speed').textContent = spd.toLocaleString();
+
+        const preview = document.getElementById('preview');
+        preview.classList.add('show');
+        preview.textContent = outputRows.length
+            ? outputRows.slice(0,100).map(r => r.output).join('\n') + (outputRows.length > 100 ? `\n\n... (${outputRows.length - 100} more emails)` : '')
+            : 'Không tìm thấy email Việt đạt ngưỡng. Thử giảm Min score hoặc đổi mode.';
+
+        const debugDiv = document.getElementById('debug');
+        addDebug(`Detection complete: ${valid}/${found} emails confirmed`);
+        addDebug(`Processing speed: ${spd} lines/sec`);
+        debugDiv.textContent = debugLog.join('\n');
+
+        downloadBtn.style.display = outputRows.length ? 'block' : 'none';
+        startBtn.disabled = false;
+        startBtn.textContent = '🚀 Detect & Filter VN Email';
+        progress(100, `✅ Xong: ${valid} email Việt xác nhận`);
+    }
+
+    runChunk();
+};
+
+downloadBtn.onclick = () => {
+    if(!outputRows.length){
+        alert('Không có dữ liệu để tải.');
+        return;
+    }
+
+    const content = outputRows.map(r => r.output).join('\n');
+    const blob = new Blob([content], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vn_email_pass.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    addDebug(`Downloaded ${outputRows.length} emails to vn_email_pass.txt`);
+};
+</script>
 </body>
 </html>
