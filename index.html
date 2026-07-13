@@ -2,530 +2,643 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Vietnamese Email Detector PRO v4 - Optimized</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VN Email Finder v7 - Compound First</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Segoe UI,Tahoma,Verdana,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px;color:#111827}
-.container{max-width:1200px;margin:auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.28);overflow:hidden}
-.header{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;text-align:center;padding:34px 22px}
-.header h1{font-size:30px;margin-bottom:10px}
-.header p{font-size:14px;opacity:.9;line-height:1.6}
-.badge{display:inline-block;margin-top:12px;padding:8px 14px;border-radius:999px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.45);color:#86efac;font-weight:900;font-size:13px}
-.content{padding:30px}
-.section{margin-bottom:25px}
-.section-title{font-size:18px;font-weight:900;margin-bottom:14px}
-.upload{border:3px dashed #667eea;background:#f5f7ff;border-radius:16px;padding:42px 18px;text-align:center;cursor:pointer;transition:.2s}
-.upload:hover,.upload.drag{background:#eef2ff;border-color:#764ba2;transform:translateY(-1px)}
-.upload-icon{font-size:52px;margin-bottom:10px}
-.upload-main{font-size:18px;font-weight:900}
-.upload-sub{font-size:13px;color:#6b7280;margin-top:7px;line-height:1.6}
-#fileInput{display:none}
-.file-info{display:none;margin-top:12px;background:#eff6ff;border-left:4px solid #3b82f6;padding:14px;border-radius:10px;font-size:13px}
-.file-info.show{display:block}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
-.card label{display:block;color:#4f46e5;font-weight:900;font-size:14px;margin-bottom:8px}
-.card input,.card select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:14px}
-.help{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.45}
-.buttons{display:flex;gap:12px;flex-wrap:wrap}
-.btn{border:none;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:900;cursor:pointer;transition:.2s;flex:1;min-width:220px}
-.btn:hover:not(:disabled){transform:translateY(-1px)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
-.success{display:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff}
-.progress-wrap{display:none}
-.progress-wrap.show{display:block}
-.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
-.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#667eea,#764ba2);transition:.15s}
-.progress-text{margin-top:10px;text-align:center;color:#6b7280;font-size:13px}
-.stats{display:none;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.stats.show{display:grid}
-.stat{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:14px;padding:20px;text-align:center}
-.stat-value{font-size:28px;font-weight:900;margin-bottom:4px}
-.stat-label{font-size:12px;opacity:.9}
-.tabs{display:flex;gap:10px;margin-bottom:15px;border-bottom:2px solid #e5e7eb}
-.tab-btn{background:none;border:none;padding:10px 20px;cursor:pointer;font-weight:900;color:#6b7280;border-bottom:3px solid transparent;transition:.2s}
-.tab-btn.active{color:#667eea;border-bottom-color:#667eea}
-.preview{display:none;margin-top:15px;background:#111827;color:#d1fae5;padding:16px;border-radius:14px;font-family:Consolas,monospace;font-size:12px;white-space:pre-wrap;max-height:330px;overflow:auto}
-.preview.show{display:block}
-.logic{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-.logic-card{background:#f9fafb;border-left:4px solid #667eea;border-radius:12px;padding:14px;font-size:13px;line-height:1.55}
-.logic-card b{color:#4f46e5}
-.warn{background:#fff7ed;border-left-color:#f97316}
-@media(max-width:768px){.header h1{font-size:23px}.content{padding:22px}.btn{min-width:100%}}
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --success: #10b981;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 45%, #0f172a 100%);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 18px;
+    line-height: 1.5;
+  }
+  .container { max-width: 940px; margin: 0 auto; }
+
+  .header { text-align: center; padding: 32px 16px 24px; }
+  .header h1 {
+    font-size: 26px; font-weight: 800;
+    background: linear-gradient(90deg, #a78bfa, #818cf8, #67e8f9);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px;
+  }
+  .header p { color: var(--muted); font-size: 14px; max-width: 580px; margin: 0 auto 14px; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.35); color: #c7d2fe;
+  }
+  .badge.green { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); color: #6ee7b7; }
+  .badge.orange { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #fcd34d; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 26px; margin-bottom: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+  }
+  .section-title {
+    font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .upload-zone {
+    border: 2px dashed #475569; border-radius: 16px; padding: 40px 18px;
+    text-align: center; cursor: pointer; transition: all 0.25s; background: rgba(15,23,42,0.5);
+  }
+  .upload-zone:hover, .upload-zone.drag {
+    border-color: var(--primary); background: rgba(99,102,241,0.08); transform: translateY(-2px);
+  }
+  .upload-zone .icon { font-size: 46px; margin-bottom: 8px; }
+  .upload-zone .main { font-size: 16px; font-weight: 700; color: #e2e8f0; }
+  .upload-zone .sub { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
+  #fileInput { display: none; }
+  .file-info {
+    display: none; margin-top: 12px; padding: 11px 14px;
+    background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 12px; font-size: 13px; color: #c7d2fe;
+  }
+  .file-info.show { display: flex; align-items: center; gap: 10px; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } }
+  .opt-card {
+    background: rgba(15,23,42,0.6); border: 1px solid var(--border);
+    border-radius: 12px; padding: 13px 14px;
+  }
+  .opt-card label { display: block; font-size: 12px; font-weight: 700; color: #a5b4fc; margin-bottom: 7px; }
+  .opt-card select, .opt-card input[type="number"] {
+    width: 100%; padding: 9px 11px; border-radius: 9px; border: 1px solid #475569;
+    background: #0f172a; color: #f1f5f9; font-size: 13.5px; outline: none;
+  }
+  .opt-card select:focus, .opt-card input:focus { border-color: var(--primary); }
+
+  .check-row { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #cbd5e1; cursor: pointer;
+  }
+  .check-item input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+  .btn-row { display: flex; gap: 11px; margin-top: 20px; flex-wrap: wrap; }
+  .btn {
+    flex: 1; min-width: 150px; padding: 13px 18px; border: none; border-radius: 12px;
+    font-size: 14.5px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+  .btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;
+    box-shadow: 0 4px 18px rgba(99,102,241,0.4);
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 26px rgba(99,102,241,0.55); }
+  .btn-success {
+    background: linear-gradient(135deg, #10b981, #059669); color: white; display: none;
+  }
+  .btn-success:hover { transform: translateY(-2px); }
+
+  .progress-wrap { display: none; margin-top: 18px; }
+  .progress-wrap.show { display: block; }
+  .progress-bar-bg {
+    height: 8px; background: #1e293b; border-radius: 99px; overflow: hidden; border: 1px solid #334155;
+  }
+  .progress-bar {
+    height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #a78bfa, #67e8f9);
+    border-radius: 99px; transition: width 0.12s ease;
+  }
+  .progress-text { text-align: center; font-size: 12.5px; color: var(--muted); margin-top: 7px; }
+
+  .stats { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+  @media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stats.show { display: grid; }
+  .stat {
+    background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155;
+    border-radius: 13px; padding: 14px 8px; text-align: center;
+  }
+  .stat-value { font-size: 22px; font-weight: 800; color: #a5b4fc; }
+  .stat-label { font-size: 10.5px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  .preview-box {
+    display: none; margin-top: 16px; background: #020617; border: 1px solid #1e293b;
+    border-radius: 13px; padding: 14px; font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px; color: #6ee7b7; max-height: 300px; overflow: auto; white-space: pre-wrap; line-height: 1.4;
+  }
+  .preview-box.show { display: block; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 6px; }
+  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+  .info-item {
+    background: rgba(15,23,42,0.5); border-left: 3px solid var(--primary);
+    border-radius: 0 10px 10px 0; padding: 12px 13px; font-size: 12.5px; color: #cbd5e1;
+  }
+  .info-item b { color: #a5b4fc; }
+  .info-item.green { border-left-color: #10b981; }
+  .info-item.green b { color: #6ee7b7; }
+  .info-item.orange { border-left-color: #f59e0b; }
+  .info-item.orange b { color: #fcd34d; }
+
+  .footer { text-align: center; padding: 18px; font-size: 12px; color: #64748b; }
 </style>
 </head>
 <body>
 <div class="container">
-<div class="header">
-<h1>🇻🇳 Vietnamese Email Detector PRO v4</h1>
-<p>Lọc email Việt Nam chính xác cao từ file url+email:password. Output: email:password</p>
-<div class="badge">Format: email:password</div>
-</div>
 
-<div class="content">
-<div class="section">
-<div class="section-title">📂 Input File</div>
-<div class="upload" id="uploadArea">
-<div class="upload-icon">📁</div>
-<div class="upload-main">Kéo thả file hoặc click để chọn</div>
-<div class="upload-sub">Hỗ trợ .txt/.csv/.log. Dòng có thể chứa URL + email:password, tool chỉ lấy email:password.</div>
-</div>
-<input id="fileInput" type="file" accept=".txt,.csv,.log">
-<div class="file-info" id="fileInfo"></div>
-</div>
+  <div class="header">
+    <h1>🇻🇳 VN Email Finder v7</h1>
+    <p>Chỉ giữ email khi có <b>dấu hiệu chắc chắn</b> (ưu tiên compound họ+tên). Xem cả <b>Email + Password</b>.</p>
+    <div class="badge-row">
+      <span class="badge">Compound First</span>
+      <span class="badge green">Email + Pass</span>
+      <span class="badge orange">Chắc chắn hơn</span>
+    </div>
+  </div>
 
-<div class="section">
-<div class="section-title">⚙️ Cấu hình lọc</div>
-<div class="grid">
-<div class="card">
-<label>Min Score (điểm tối thiểu)</label>
-<input id="minScore" type="number" min="1" max="100" value="75">
-<div class="help">Mặc định 75 để lọc email Việt Nam. Giảm để lấy nhiều hơn, tăng để chặt hơn.</div>
-</div>
-<div class="card">
-<label>Mode Kiểm tra</label>
-<select id="strictMode">
-<option value="very_strict" selected>Very Strict - chắc nhất</option>
-<option value="strict">Strict</option>
-<option value="balanced">Balanced</option>
-</select>
-<div class="help">Very Strict yêu cầu họ Việt rõ + tên/đệm Việt hoặc tên ghép chắc chắn.</div>
-</div>
-<div class="card">
-<label>Domain Filter</label>
-<select id="domainMode">
-<option value="popular" selected>Domain phổ biến</option>
-<option value="all">Mọi domain hợp lệ</option>
-</select>
-<div class="help">Domain phổ biến được cộng điểm nhẹ. Chọn "Mọi domain" để bao gồm tất cả.</div>
-</div>
-<div class="card">
-<label>Chunk Size (bộ nhớ)</label>
-<input id="chunkSize" type="number" min="1000" max="500000" value="100000">
-<div class="help">Tăng nếu máy mạnh. Giảm nếu trình duyệt lag khi xử lý file lớn.</div>
-</div>
-</div>
-</div>
+  <div class="card">
+    <div class="section-title">📂 Chọn file combo</div>
+    <div class="upload-zone" id="uploadZone">
+      <div class="icon">📁</div>
+      <div class="main">Kéo thả file hoặc click để chọn</div>
+      <div class="sub">Hỗ trợ .txt .csv .log · Tự nhận hầu hết format email:pass</div>
+    </div>
+    <input type="file" id="fileInput" accept=".txt,.csv,.log,.text,.dat,.jsonl">
+    <div class="file-info" id="fileInfo"></div>
 
-<div class="section">
-<div class="buttons">
-<button class="btn primary" id="startBtn" disabled>🚀 Bắt đầu lọc</button>
-<button class="btn success" id="downloadBtn">⬇️ Tải vn_emails.txt</button>
-</div>
-</div>
+    <div class="options">
+      <div class="opt-card">
+        <label>Độ chắc chắn</label>
+        <select id="certaintyMode">
+          <option value="compound" selected>Compound + Multi (khuyến nghị)</option>
+          <option value="strict_compound">Chỉ Compound chắc chắn</option>
+          <option value="relaxed">Nới hơn (họ + tên riêng)</option>
+        </select>
+      </div>
+      <div class="opt-card">
+        <label>Domain</label>
+        <select id="domainMode">
+          <option value="all" selected>Mọi domain</option>
+          <option value="popular">Chỉ domain phổ biến</option>
+        </select>
+      </div>
+    </div>
 
-<div class="section progress-wrap" id="progressWrap">
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-<div class="progress-text" id="progressText">Chuẩn bị...</div>
-</div>
+    <div class="check-row">
+      <label class="check-item">
+        <input type="checkbox" id="checkPass" checked>
+        Kiểm tra dấu hiệu trong <b>Password</b> (nên bật)
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="strictJunk" checked>
+        Loại rác rõ ràng (admin / test / bot / random / tên Tây)
+      </label>
+    </div>
 
-<div class="section">
-<div class="stats" id="stats">
-<div class="stat"><div class="stat-value" id="totalLines">0</div><div class="stat-label">TOTAL LINES</div></div>
-<div class="stat"><div class="stat-value" id="emailFound">0</div><div class="stat-label">EMAIL FOUND</div></div>
-<div class="stat"><div class="stat-value" id="vnDetected">0</div><div class="stat-label">VN DETECTED (75+)</div></div>
-<div class="stat"><div class="stat-value" id="speed">0</div><div class="stat-label">LINES/SEC</div></div>
-</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="startBtn" disabled>
+        <span>🚀</span> Bắt đầu lọc
+      </button>
+      <button class="btn btn-success" id="downloadBtn">
+        <span>⬇️</span> Tải kết quả
+      </button>
+    </div>
 
-<div class="tabs" id="tabsContainer" style="display:none;">
-<button class="tab-btn active" data-tab="preview">📊 Preview Results</button>
-<button class="tab-btn" data-tab="debug">🐛 Debug Log</button>
-</div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-text" id="progressText">Đang chuẩn bị...</div>
+    </div>
 
-<div class="preview" id="preview"></div>
-<div class="preview" id="debugLog"></div>
-</div>
+    <div class="stats" id="stats">
+      <div class="stat"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Tổng dòng</div></div>
+      <div class="stat"><div class="stat-value" id="statFound">0</div><div class="stat-label">Email:Pass</div></div>
+      <div class="stat"><div class="stat-value" id="statVN">0</div><div class="stat-label">VN chắc chắn</div></div>
+      <div class="stat"><div class="stat-value" id="statSpeed">0</div><div class="stat-label">dòng/giây</div></div>
+    </div>
 
-<div class="section">
-<div class="section-title">🧠 Thuật toán v4</div>
-<div class="logic">
-<div class="logic-card"><b>Điểm Họ Việt:</b> Nguyễn/Trần/Phạm/Hoàng/Huỳnh +40 điểm (hơn 100 họ)</div>
-<div class="logic-card"><b>Tên ghép:</b> NguyễnVân, PhạmThị +48 điểm (phát hiện họ+tên liền)</div>
-<div class="logic-card"><b>Tên Việt:</b> Văn, Thị, Đức, Minh, Anh... +20 điểm mỗi token</div>
-<div class="logic-card"><b>Tỉ lệ nguyên âm:</b> 32-70% = tự nhiên, +4 điểm</div>
-<div class="logic-card warn"><b>Output an toàn:</b> Chỉ xuất email:password, không xuất password riêng lẻ.</div>
-</div>
-</div>
-</div>
+    <div class="preview-box" id="preview"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">🎯 Logic v7 – Ưu tiên Compound (chắc chắn hơn)</div>
+    <div class="info-grid">
+      <div class="info-item green">
+        <b>Giữ lại (chắc chắn):</b><br>
+        • Compound: <code>nguyenvan</code>, <code>phamthi</code>, <code>tranminh</code>, <code>hoanganh</code>...<br>
+        • Họ + tên/đệm rõ: <code>nguyen.van</code>, <code>van.nguyen</code>, <code>minh.nguyen</code><br>
+        • Multi token Việt: ≥ 2 token họ/tên trong email hoặc pass<br>
+        • Compound trong password cũng được tính
+      </div>
+      <div class="info-item orange">
+        <b>Không giữ nếu chỉ có:</b><br>
+        • Mỗi “van”, “thi”, “minh”, “anh” đứng một mình<br>
+        • Mỗi họ ngắn (le, do, ho, ly...) không có tên đi kèm<br>
+        • Chỉ digraph (ng, th...) mà không có họ/tên<br>
+        • Tên Tây / admin / random
+      </div>
+    </div>
+    <p style="margin-top:14px;font-size:12.5px;color:#94a3b8;text-align:center">
+      Tool chạy 100% trên trình duyệt · Không gửi dữ liệu · An toàn
+    </p>
+  </div>
+
+  <div class="footer">VN Email Finder v7 · Compound First · Higher Precision</div>
 </div>
 
 <script>
-let selectedFile = null;
-let outputRows = [];
-let debugLogs = [];
+/* =====================================================
+   VN Email Finder v7 - Compound First
+   Ưu tiên compound (họ+tên) để chắc chắn hơn
+   Vẫn xem cả Email + Password
+   ===================================================== */
 
 const POPULAR_DOMAINS = new Set([
-'gmail.com','yahoo.com','yahoo.com.vn','outlook.com','hotmail.com','icloud.com','proton.me','protonmail.com',
-'aol.com','mail.com','yandex.com','163.com','qq.com','sina.com','sohu.com'
+  'gmail.com','yahoo.com','yahoo.com.vn','outlook.com','hotmail.com','live.com','icloud.com',
+  'proton.me','protonmail.com','aol.com','mail.com','yandex.com','163.com','qq.com','zoho.com',
+  'gmx.com','mail.ru','msn.com','me.com','googlemail.com'
 ]);
 
-const SURNAME_STRONG = new Set([
-'nguyen','tran','pham','hoang','huynh','phan','vu','vo','dang','bui','truong','ngo','duong','dinh','doan','trinh',
-'mai','cao','luu','lam','dao','thai','chau','ton','van','ha','chu','bach','luong','kieu','phung','quach','ung','trieu',
-'mac','lu','ma','ong','kiem','thach','do','le','ho','ta','to','la','ly','son','giang','nam','quang','thuy','phuong',
-'hoa','hong','hien','han','nhan','yen','an','binh','kien','khanh','linh','dat','loc','viet','lon','hai','vinh'
+// Họ mạnh (ưu tiên top)
+const TOP_SURNAMES = ['nguyen','tran','le','pham','hoang','huynh','vu','vo','phan','truong','bui','do','dang','ngo','ho','duong','ly'];
+const STRONG_SURNAMES = new Set([
+  ...TOP_SURNAMES,
+  'dinh','doan','trinh','mai','cao','luu','lam','dao','thai','chau','ton','ha','chu','bach','luong','kieu','phung',
+  'quach','ung','trieu','mac','ma','ong','thach','ta','to','la','son','giang','binh','kien','khanh','linh',
+  'dat','loc','viet','hai','vinh','lu','diep','giap','hanh','lai','lang','liem','lieu','loan','manh','ninh',
+  'phi','phong','phu','quan','que','quyen','tang','tan','thach','thai','thang','thanh','thao','thien',
+  'thinh','tho','thu','tien','tiet','to','ton','tong','trang','tri','trieu','trinh','tu','tuong','ung',
+  'van','vi','vinh','vuong'
 ]);
 
-const SURNAME_SHORT_AMBIGUOUS = new Set(['le','do','ho','ly','ta','to','la']);
+// Đệm + tên phổ biến (dùng để ghép compound)
+const MIDDLES = new Set([
+  'van','thi','duc','huu','minh','ngoc','thanh','quang','xuan','hoang','anh','bao','gia','nhat','duy','cong',
+  'tuan','tien','huy','trung','phu','phuc','hoai','nhu','kim','the','quoc','nam','hung','cuong','son','long',
+  'hai','vinh','dat','loc','viet','lam','binh','khanh','khoa','phuoc','thien','tai','thang','thinh','quan',
+  'tung','kien','toan','tri','tin','linh','hoa','trang','yen','nhung','quynh','giang','thuy','thao','tuyet',
+  'huyen','phuong','chi','nhi','uyen','trinh','loan','hanh','diem','dung','thu','nga','oanh','truc','tram',
+  'hien','hue','vy','my','ha','mai','lan','nha','kiet','nhan','ngan','nghia','duyen','huong','nhien',
+  'khue','mi','thy','thuong','tu','tuong','hieu','hiep','nhut','manh','phat','khoi','khang'
+]);
 
-const VN_NAMES = new Set([
-'van','thi','duc','huu','minh','ngoc','thanh','quang','xuan','hoang','anh','bao','gia','nhat','duy','cong','tuan','tien',
-'huy','trung','phu','phuc','hoai','nhu','kim','the','quoc','nam','hung','cuong','son','long','hai','vinh','dat','loc',
-'viet','lam','binh','khanh','khoa','phuoc','thien','tai','thang','thinh','quan','tung','kien','toan','tri','tin','linh',
-'hoa','trang','yen','nhung','quynh','giang','thuy','thao','tuyet','huyen','phuong','chi','nhi','uyen','trinh','loan',
-'hanh','diem','dung','thu','nga','oanh','truc','tram','hien','hue','vy','my','ha','mai','lan','nha','kiet','nhan','ngan',
-'nhat','nghia','nghi','duyen','huong','nhien','khue','mi','ty','hy','thy','thuong','tu','tuong','hieu','hiep','nhut',
-'thao','thuc','tho','thai','thang','thien','thiem','thua','thuat','thuong','ti','tiet','tin','tinh','toan','toai','tone',
-'tong','tram','trang','tranq','tri','tria','trieu','trinh','trong','trong','trong','tru','truc','truc','true','trui','trung'
+const NAMES = new Set([
+  ...MIDDLES,
+  'huy','khang','bao','phuc','dat','khoi','long','duy','quan','kiet','thinh','tuan','hung','hieu','nhan',
+  'tri','tai','phong','an','phu','duc','dung','loc','vinh','tien','nghia','thien','hao','dang','quang',
+  'lam','nhat','trung','thang','tu','tam','sang','son','thai','cuong','toan','thuan','binh','truong',
+  'danh','kien','phuoc','tan','viet','khai','tin','duong','tung','quy','hau','trong','luan','quoc',
+  'thong','khiem','tuong','kha','vy','bach','manh','loi','dai','hiep','dong','nhut','giang','ky','phi',
+  'vuong','cong','linh','lan','mai','ngoc','trang','hoa','phuong','hien','thao','thuy','huyen','quynh',
+  'yen','nhung','chi','nhi','uyen','loan','hanh','diem','dung','thu','nga','oanh','truc','tram','hue',
+  'vy','my','nha','ngan','duyen','huong','bich','cam','chau','cuc','dao','hang','hong','kieu','kim',
+  'lien','nga','nhu','tuyen','tuyet','xuan'
 ]);
 
 const BAD_PREFIX = new Set([
-'admin','administrator','support','help','contact','info','test','demo','user','account','mail','email','marketing','sales',
-'service','root','null','none','unknown','abc','abcd','qwerty','asdf','zxcv','webmaster','security','billing','office',
-'career','jobs','hr','noreply','no-reply','robot','bot','shop','store','payment','invoice','order','spam','nospam','bounce'
+  'admin','administrator','support','help','contact','info','test','demo','user','account','mail','email',
+  'marketing','sales','service','root','null','none','unknown','abc','abcd','qwerty','asdf','zxcv',
+  'webmaster','security','billing','office','career','jobs','hr','noreply','no-reply','robot','bot',
+  'shop','store','payment','invoice','order','spam','nospam','bounce','postmaster','hostmaster',
+  'abuse','customer','guest','temp','temporary','fake','xxx','yyy','zzz','donotreply'
 ]);
 
-const uploadArea = document.getElementById('uploadArea');
+const ENGLISH = new Set([
+  'john','mike','david','james','robert','michael','william','richard','joseph','thomas','charles',
+  'chris','daniel','matthew','anthony','mark','donald','steven','paul','andrew','joshua','kenneth',
+  'kevin','brian','george','timothy','ronald','edward','jason','jeffrey','ryan','jacob','gary',
+  'nicholas','eric','jonathan','stephen','larry','justin','scott','brandon','benjamin','samuel',
+  'raymond','gregory','frank','alexander','patrick','jack','dennis','jerry','tyler','aaron','jose',
+  'henry','adam','douglas','nathan','peter','zachary','kyle','noah','ethan','jeremy','walter',
+  'mary','patricia','jennifer','linda','elizabeth','barbara','susan','jessica','sarah','karen',
+  'nancy','lisa','betty','margaret','sandra','ashley','kimberly','emily','donna','michelle',
+  'dorothy','carol','amanda','melissa','deborah','stephanie','rebecca','sharon','laura','cynthia',
+  'amy','angela','anna','brenda','emma','nicole','helen','samantha','christine','rachel','maria',
+  'heather','diane','ruth','julie','olivia','victoria','kelly','lauren','martha','gloria','teresa',
+  'ann','sara','madison','sophia','grace','denise','amber','isabella','natalie','charlotte','marie'
+]);
+
+// ========== DOM ==========
+const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
 const fileInfo = document.getElementById('fileInfo');
 const startBtn = document.getElementById('startBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const statsEl = document.getElementById('stats');
+const previewEl = document.getElementById('preview');
 
-uploadArea.onclick = () => fileInput.click();
-uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('drag'); };
-uploadArea.ondragleave = () => uploadArea.classList.remove('drag');
-uploadArea.ondrop = e => { e.preventDefault(); uploadArea.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); };
-fileInput.onchange = e => handleFile(e.target.files[0]);
+let selectedFile = null;
+let outputRows = [];
 
-// Tab switching
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const tab = btn.getAttribute('data-tab');
-        document.getElementById('preview').style.display = tab === 'preview' ? 'block' : 'none';
-        document.getElementById('debugLog').style.display = tab === 'debug' ? 'block' : 'none';
-    };
-});
+uploadZone.onclick = () => fileInput.click();
+uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag'); };
+uploadZone.ondragleave = () => uploadZone.classList.remove('drag');
+uploadZone.ondrop = e => {
+  e.preventDefault(); uploadZone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+};
+fileInput.onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); };
 
-function handleFile(file){
-    if(!file) return;
-    selectedFile = file;
-    fileInfo.classList.add('show');
-    fileInfo.innerHTML = `📄 <b>${escapeHtml(file.name)}</b> | 📦 ${formatSize(file.size)}`;
-    startBtn.disabled = false;
+function handleFile(file) {
+  selectedFile = file;
+  fileInfo.classList.add('show');
+  fileInfo.innerHTML = `
+    <span style="font-size:20px">📄</span>
+    <div><b>${escapeHtml(file.name)}</b><br>
+    <span style="opacity:0.8;font-size:12px">${formatSize(file.size)} · ${new Date(file.lastModified).toLocaleString()}</span></div>`;
+  startBtn.disabled = false;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function formatSize(b){
+  if(!b) return '0 B';
+  const u=['B','KB','MB','GB']; const i=Math.floor(Math.log(b)/Math.log(1024));
+  return (b/Math.pow(1024,i)).toFixed(2)+' '+u[i];
 }
 
-function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function formatSize(bytes){
-    if(!bytes) return '0 Bytes';
-    const k = 1024, sizes = ['Bytes','KB','MB','GB'];
-    const i = Math.floor(Math.log(bytes)/Math.log(k));
-    return (bytes/Math.pow(k,i)).toFixed(2)+' '+sizes[i];
-}
-
-function extractEmailPassword(line){
-    // Extract email:password format
-    const match = String(line).match(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24})[:\s]+([^\s]+)/);
-    if(match){
-        return {
-            email: match[1].toLowerCase(),
-            password: match[2]
-        };
+// ========== EXTRACTION ==========
+function extractEmailPass(line) {
+  const s = String(line).trim();
+  if (s.length < 6) return null;
+  const patterns = [
+    /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24})\s*[:|;,]\s*([^\s|:,;"']{1,120})/,
+    /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24})\s*:\s*([^\s:]{1,100})/,
+    /["']([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24})["']\s*[,:]\s*["']([^"']{1,100})["']/,
+    /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24})\s+([^\s@]{3,90})/,
+    /[|\t]\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24})\s*[:|;]\s*([^\s|:,;]{1,100})/,
+    /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24}):([^\s]{1,90})\s*$/,
+    /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,24}).{0,30}[:|;]\s*([a-zA-Z0-9!@#$%^&*_\-+=.]{3,70})/
+  ];
+  for (const re of patterns) {
+    const m = s.match(re);
+    if (m && m[1] && m[2]) {
+      const email = m[1].toLowerCase().trim();
+      let pass = m[2].trim().replace(/[,;|"'\s]+$/,'').replace(/^["']|["']$/g,'');
+      if (pass.length >= 1 && pass.length <= 120 && !pass.includes('@') && email.includes('@')) {
+        return { email, password: pass };
+      }
     }
-    return null;
+  }
+  return null;
 }
 
-function alphaOf(local){
-    return local.replace(/[^a-z]/gi,'').toLowerCase();
+// ========== CORE: COMPOUND + STRONG SIGNAL ==========
+function alphaOnly(str) {
+  return String(str).replace(/[^a-zA-Z]/g, '').toLowerCase();
 }
 
-function tokensOf(local){
-    return local.toLowerCase()
-        .split(/[._\-+0-9]+/)
-        .map(x => x.replace(/[^a-z]/g,''))
-        .filter(Boolean);
+function tokensOf(str) {
+  return String(str).toLowerCase()
+    .split(/[._\-+0-9\s|@]+/)
+    .map(t => t.replace(/[^a-z]/g,''))
+    .filter(t => t.length >= 2);
 }
 
-function isBadRandom(alpha){
-    if(alpha.length < 12) return false;
-    const uniqueRatio = new Set(alpha).size / alpha.length;
-    const vowels = (alpha.match(/[aeiouy]/g) || []).length;
-    const vr = vowels / alpha.length;
-    return uniqueRatio > 0.78 || vr < 0.22 || vr > 0.78;
-}
+// Kiểm tra compound chắc chắn: họ + (đệm/tên)
+function hasStrongCompound(alpha) {
+  if (alpha.length < 6) return false;
 
-function scoreEmail(email, domainMode, strictMode){
-    const parts = email.split('@');
-    if(parts.length !== 2) return {score:0, pass:false, reason:'invalid_email'};
-
-    const local = parts[0];
-    const domain = parts[1];
-
-    if(domainMode === 'popular' && !POPULAR_DOMAINS.has(domain)){
-        return {score:0, pass:false, reason:'domain_not_popular'};
+  // 1. Starts with top/strong surname + middle/name
+  for (const sn of TOP_SURNAMES) {
+    if (alpha.startsWith(sn) && alpha.length >= sn.length + 3) {
+      const rest = alpha.slice(sn.length);
+      // rest bắt đầu bằng middle hoặc name
+      for (const m of MIDDLES) {
+        if (rest.startsWith(m) && m.length >= 2) return true;
+      }
+      for (const n of NAMES) {
+        if (n.length >= 3 && rest.startsWith(n)) return true;
+      }
     }
+  }
 
-    const alpha = alphaOf(local);
-    const tokens = tokensOf(local);
-    const first = tokens[0] || alpha;
-
-    if(alpha.length < 5) return {score:0, pass:false, reason:'local_too_short'};
-    if(BAD_PREFIX.has(first) || BAD_PREFIX.has(alpha)) return {score:0, pass:false, reason:'blacklist'};
-    if(isBadRandom(alpha)) return {score:0, pass:false, reason:'random_like_local'};
-
-    let score = 0;
-    const reasons = [];
-    let signals = 0;
-    let hasStrongSurname = false;
-    let hasAmbiguousSurname = false;
-    let hasVNName = false;
-    let hasCompound = false;
-    let tokenHits = 0;
-
-    if(POPULAR_DOMAINS.has(domain)){
-        score += 3;
-        reasons.push('popular_domain+3');
+  // 2. Longer strong surnames
+  for (const sn of STRONG_SURNAMES) {
+    if (sn.length < 4) continue;
+    if (alpha.startsWith(sn) && alpha.length >= sn.length + 3) {
+      const rest = alpha.slice(sn.length);
+      for (const m of MIDDLES) {
+        if (rest.startsWith(m)) return true;
+      }
+      for (const n of NAMES) {
+        if (n.length >= 3 && rest.startsWith(n)) return true;
+      }
     }
+  }
 
-    if(SURNAME_STRONG.has(first)){
-        score += 38;
-        signals++;
-        tokenHits++;
-        hasStrongSurname = true;
-        reasons.push('strong_surname+38');
-    } else if(SURNAME_SHORT_AMBIGUOUS.has(first)){
-        score += 12;
-        signals++;
-        tokenHits++;
-        hasAmbiguousSurname = true;
-        reasons.push('ambiguous_surname+12');
+  // 3. Reverse compound: name + surname (anhnnguyen, minhtran...)
+  for (const sn of TOP_SURNAMES) {
+    if (alpha.endsWith(sn) && alpha.length >= sn.length + 3) {
+      const front = alpha.slice(0, alpha.length - sn.length);
+      if (MIDDLES.has(front) || NAMES.has(front) || front.length >= 3) {
+        // front có vẻ là tên
+        for (const m of MIDDLES) if (front.endsWith(m) || front === m) return true;
+        for (const n of NAMES) if (n.length >= 3 && (front.endsWith(n) || front === n)) return true;
+      }
     }
+  }
 
-    for(const t of tokens.slice(1)){
-        if(VN_NAMES.has(t)){
-            score += 20;
-            signals++;
-            tokenHits++;
-            hasVNName = true;
-            reasons.push(`vn_name_${t}+20`);
-        } else if(SURNAME_STRONG.has(t)){
-            score += 10;
-            signals++;
-            tokenHits++;
-            reasons.push(`surname_${t}+10`);
+  // 4. Contains glued compound anywhere (less common but useful)
+  for (const sn of ['nguyen','tran','pham','hoang','huynh','phan','truong','bui','dang','ngo','duong','dinh']) {
+    const idx = alpha.indexOf(sn);
+    if (idx >= 0) {
+      const after = alpha.slice(idx + sn.length);
+      const before = alpha.slice(0, idx);
+      if (after.length >= 3) {
+        for (const m of ['van','thi','minh','anh','duc','ngoc','thanh','quang','huy','tuan','long','nam','dat','linh','hoa','trang','thuy','phuong','khoa','phuc']) {
+          if (after.startsWith(m)) return true;
         }
-    }
-
-    if(tokens.length >= 2 && tokenHits >= 2){
-        score += 12;
-        reasons.push('multi_token+12');
-    }
-
-    const allSurnames = [...SURNAME_STRONG, ...SURNAME_SHORT_AMBIGUOUS];
-    for(const sn of allSurnames){
-        if(alpha.startsWith(sn) && alpha.length >= sn.length + 3){
-            const rest = alpha.slice(sn.length);
-            for(const name of VN_NAMES){
-                if(rest.startsWith(name)){
-                    const add = SURNAME_SHORT_AMBIGUOUS.has(sn) ? 30 : 48;
-                    score += add;
-                    signals += 2;
-                    hasCompound = true;
-                    hasVNName = true;
-                    if(SURNAME_STRONG.has(sn)) hasStrongSurname = true;
-                    reasons.push(`compound_${sn}${name}+${add}`);
-                    break;
-                }
-            }
-            if(hasCompound) break;
+      }
+      if (before.length >= 3) {
+        for (const m of ['van','thi','minh','anh','duc','ngoc','thanh','quang','huy','tuan','long','nam']) {
+          if (before.endsWith(m)) return true;
         }
+      }
     }
+  }
 
-    const vowels = (alpha.match(/[aeiouy]/g) || []).length;
-    const vr = vowels / alpha.length;
-    if(vr >= 0.32 && vr <= 0.70){
-        score += 4;
-        reasons.push('vowel_ok+4');
-    }
-
-    if(alpha.length >= 6 && alpha.length <= 22){
-        score += 4;
-        reasons.push('length_ok+4');
-    }
-
-    const digits = (local.match(/[0-9]/g) || []).length;
-    if(digits >= 5){
-        score -= 12;
-        reasons.push('many_digits-12');
-    }
-    if(local.length > 30){
-        score -= 10;
-        reasons.push('local_long-10');
-    }
-
-    if(hasAmbiguousSurname && !hasVNName && !hasCompound){
-        score -= 20;
-        reasons.push('ambiguous_no_name-20');
-    }
-
-    let structuralPass = false;
-    if(strictMode === 'very_strict'){
-        structuralPass = (
-            (hasCompound && (hasStrongSurname || hasAmbiguousSurname)) ||
-            (hasStrongSurname && hasVNName && signals >= 2) ||
-            (tokens.length >= 3 && tokenHits >= 2 && hasVNName)
-        );
-        if(!structuralPass){
-            score -= 18;
-            reasons.push('strict_fail-18');
-        }
-    } else if(strictMode === 'strict'){
-        structuralPass = (
-            hasCompound ||
-            (hasStrongSurname && (hasVNName || tokenHits >= 2)) ||
-            (signals >= 2 && hasVNName)
-        );
-        if(!structuralPass){
-            score -= 10;
-            reasons.push('struct_fail-10');
-        }
-    } else {
-        structuralPass = hasCompound || hasStrongSurname || (signals >= 2);
-    }
-
-    score = Math.max(0, Math.min(100, Math.round(score)));
-    return {
-        score,
-        pass: structuralPass,
-        reason: reasons.length ? reasons.join(';') : 'no_signal'
-    };
+  return false;
 }
 
-function progress(p, text){
-    document.getElementById('progressWrap').classList.add('show');
-    document.getElementById('progressBar').style.width = p + '%';
-    document.getElementById('progressText').textContent = text;
+// Multi-token mạnh: có ≥2 token thuộc họ/tên
+function hasMultiTokenVN(tokens) {
+  let hits = 0;
+  let hasSurname = false;
+  let hasName = false;
+  for (const t of tokens) {
+    if (STRONG_SURNAMES.has(t)) { hits++; hasSurname = true; }
+    else if (MIDDLES.has(t) || NAMES.has(t)) { hits++; hasName = true; }
+  }
+  // Cần ít nhất 1 họ + 1 tên/đệm, hoặc ≥2 tên mạnh
+  return (hasSurname && hasName) || hits >= 2;
 }
 
-function addDebug(msg){
-    const ts = new Date().toLocaleTimeString();
-    debugLogs.push(`[${ts}] ${msg}`);
-    document.getElementById('debugLog').textContent = debugLogs.join('\n');
+// Main check theo mode
+function isVietnamese(text, mode) {
+  if (!text || text.length < 4) return false;
+  const alpha = alphaOnly(text);
+  if (alpha.length < 4) return false;
+
+  const tokens = tokensOf(text);
+
+  // 1. Compound luôn là tín hiệu mạnh nhất
+  if (hasStrongCompound(alpha)) return true;
+
+  // 2. Multi-token rõ ràng
+  if (mode !== 'strict_compound' && hasMultiTokenVN(tokens)) return true;
+
+  // 3. Mode relaxed: họ mạnh + (có tên hoặc multi)
+  if (mode === 'relaxed') {
+    const first = tokens[0] || alpha.slice(0, 8);
+    const last = tokens[tokens.length - 1] || '';
+    if (STRONG_SURNAMES.has(first) || STRONG_SURNAMES.has(last)) {
+      // có họ → cần thêm tín hiệu tên
+      for (const t of tokens) {
+        if (MIDDLES.has(t) || NAMES.has(t)) return true;
+      }
+      // hoặc alpha chứa tên dài
+      for (const n of ['minh','anh','duc','ngoc','thanh','quang','huy','tuan','long','nam','dat','linh','hoa','trang','thuy','phuong','khoa','phuc','hieu','kiet']) {
+        if (alpha.includes(n) && n.length >= 3) return true;
+      }
+    }
+  }
+
+  return false;
 }
 
+function isJunk(local, alpha) {
+  const first = alpha.slice(0, 10);
+  if (BAD_PREFIX.has(first) || BAD_PREFIX.has(alpha)) return true;
+  if (ENGLISH.has(first) && alpha.length <= 12) return true;
+  if (alpha.length >= 12) {
+    const unique = new Set(alpha).size / alpha.length;
+    const vowels = (alpha.match(/[aeiouy]/g) || []).length / alpha.length;
+    if (unique > 0.85 || vowels < 0.14 || vowels > 0.83) return true;
+  }
+  return false;
+}
+
+// ========== MAIN ==========
 startBtn.onclick = async () => {
-    if(!selectedFile) return;
+  if (!selectedFile) return;
 
-    outputRows = [];
-    debugLogs = [];
-    downloadBtn.style.display = 'none';
-    document.getElementById('preview').classList.remove('show');
-    document.getElementById('stats').classList.remove('show');
-    document.getElementById('tabsContainer').style.display = 'none';
+  outputRows = [];
+  downloadBtn.style.display = 'none';
+  previewEl.classList.remove('show');
+  statsEl.classList.remove('show');
+  progressWrap.classList.add('show');
 
-    const minScore = Math.max(1, Math.min(100, Number(document.getElementById('minScore').value) || 75));
-    const chunkSize = Math.max(1000, Number(document.getElementById('chunkSize').value) || 100000);
-    const domainMode = document.getElementById('domainMode').value;
-    const strictMode = document.getElementById('strictMode').value;
+  const mode = document.getElementById('certaintyMode').value;
+  const domainMode = document.getElementById('domainMode').value;
+  const checkPass = document.getElementById('checkPass').checked;
+  const strictJunk = document.getElementById('strictJunk').checked;
+  const chunkSize = 70000;
 
-    addDebug(`🚀 Bắt đầu lọc với Min Score: ${minScore}, Mode: ${strictMode}, Domain: ${domainMode}`);
+  startBtn.disabled = true;
+  startBtn.innerHTML = '<span>⏳</span> Đang lọc...';
 
-    startBtn.disabled = true;
-    startBtn.textContent = '⏳ Đang lọc...';
+  const t0 = performance.now();
+  let text;
+  try { text = await selectedFile.text(); }
+  catch(e) {
+    progressText.textContent = 'Lỗi đọc file: ' + e.message;
+    startBtn.disabled = false;
+    startBtn.innerHTML = '<span>🚀</span> Bắt đầu lọc';
+    return;
+  }
 
-    const started = performance.now();
-    const text = await selectedFile.text();
-    const lines = text.split(/\r?\n/);
-    const total = lines.length;
-    const seen = new Set();
+  const lines = text.split(/\r?\n/);
+  const total = lines.length;
+  const seen = new Set();
+  let processed = 0, found = 0, vnCount = 0;
 
-    addDebug(`📊 Tổng dòng: ${total.toLocaleString()}`);
+  function runChunk() {
+    const end = Math.min(processed + chunkSize, total);
+    for (let i = processed; i < end; i++) {
+      const pair = extractEmailPass(lines[i]);
+      if (!pair) continue;
+      found++;
 
-    let processed = 0, found = 0, valid = 0;
+      const { email, password } = pair;
+      if (seen.has(email)) continue;
+      seen.add(email);
 
-    function runChunk(){
-        const end = Math.min(processed + chunkSize, total);
+      const parts = email.split('@');
+      if (parts.length !== 2) continue;
+      const local = parts[0];
+      const domain = parts[1];
 
-        for(let i = processed; i < end; i++){
-            const parsed = extractEmailPassword(lines[i]);
-            if(!parsed) continue;
+      if (domainMode === 'popular' && !POPULAR_DOMAINS.has(domain)) continue;
 
-            const {email, password} = parsed;
-            found++;
+      const alpha = alphaOnly(local);
+      if (strictJunk && isJunk(local, alpha)) continue;
 
-            if(seen.has(email)) continue;
-            seen.add(email);
+      // ===== CORE DECISION =====
+      let keep = isVietnamese(local, mode) || isVietnamese(alpha, mode);
+      if (!keep && checkPass) {
+        keep = isVietnamese(password, mode);
+      }
 
-            const result = scoreEmail(email, domainMode, strictMode);
-
-            if(result.pass && result.score >= minScore){
-                outputRows.push(`${email}:${password}`);
-                valid++;
-            }
-        }
-
-        processed = end;
-        const pct = total ? Math.round(processed / total * 100) : 100;
-        progress(pct, `Đã xử lý ${processed.toLocaleString()} / ${total.toLocaleString()} dòng | Email VN: ${valid.toLocaleString()}`);
-
-        if(processed < total) setTimeout(runChunk, 0);
-        else finish();
+      if (keep) {
+        outputRows.push(email + ':' + password);
+        vnCount++;
+      }
     }
 
-    function finish(){
-        const sec = Math.max(0.001, (performance.now() - started) / 1000);
-        const spd = Math.round(total / sec);
+    processed = end;
+    const pct = total ? Math.round(processed / total * 100) : 100;
+    progressBar.style.width = pct + '%';
+    progressText.textContent = `Đã xử lý ${processed.toLocaleString()} / ${total.toLocaleString()} · VN chắc chắn: ${vnCount.toLocaleString()}`;
 
-        addDebug(`✅ Hoàn tất! Thời gian: ${sec.toFixed(2)}s`);
-        addDebug(`📈 Kết quả: ${found.toLocaleString()} email found, ${valid.toLocaleString()} email VN (${minScore}+ điểm)`);
-        addDebug(`⚡ Tốc độ: ${spd.toLocaleString()} lines/sec`);
+    if (processed < total) setTimeout(runChunk, 0);
+    else finish(t0, total, found, vnCount);
+  }
 
-        document.getElementById('stats').classList.add('show');
-        document.getElementById('totalLines').textContent = total.toLocaleString();
-        document.getElementById('emailFound').textContent = found.toLocaleString();
-        document.getElementById('vnDetected').textContent = valid.toLocaleString();
-        document.getElementById('speed').textContent = spd.toLocaleString();
+  function finish(t0, total, found, vnCount) {
+    const sec = Math.max(0.001, (performance.now() - t0) / 1000);
+    const speed = Math.round(total / sec);
 
-        const preview = document.getElementById('preview');
-        preview.classList.add('show');
-        preview.textContent = outputRows.length
-            ? outputRows.slice(0,150).join('\n') + (outputRows.length > 150 ? `\n\n... còn ${outputRows.length - 150} email` : '')
-            : `Không có email nào đạt ngưỡng ${minScore} điểm. Thử giảm Min Score xuống 65-70.`;
+    document.getElementById('statTotal').textContent = total.toLocaleString();
+    document.getElementById('statFound').textContent = found.toLocaleString();
+    document.getElementById('statVN').textContent = vnCount.toLocaleString();
+    document.getElementById('statSpeed').textContent = speed.toLocaleString();
+    statsEl.classList.add('show');
 
-        document.getElementById('tabsContainer').style.display = outputRows.length ? 'flex' : 'none';
-        downloadBtn.style.display = outputRows.length ? 'block' : 'none';
-        startBtn.disabled = false;
-        startBtn.textContent = '🚀 Bắt đầu lọc';
-        progress(100, `Hoàn tất: ${valid.toLocaleString()} email VN chính xác`);
+    previewEl.classList.add('show');
+    if (outputRows.length) {
+      previewEl.textContent = outputRows.slice(0, 160).join('\n') +
+        (outputRows.length > 160 ? `\n\n... và ${outputRows.length - 160} email nữa` : '');
+    } else {
+      previewEl.textContent = 'Không tìm thấy email nào đủ chắc chắn.\nThử chuyển sang "Nới hơn" hoặc tắt "Loại rác".';
     }
 
-    runChunk();
+    downloadBtn.style.display = outputRows.length ? 'flex' : 'none';
+    progressText.textContent = `Hoàn tất! ${vnCount.toLocaleString()} email VN chắc chắn · ${speed.toLocaleString()} dòng/giây`;
+    startBtn.disabled = false;
+    startBtn.innerHTML = '<span>🚀</span> Bắt đầu lọc';
+  }
+
+  runChunk();
 };
 
 downloadBtn.onclick = () => {
-    if(!outputRows.length){
-        alert('Không có dữ liệu để tải.');
-        return;
-    }
-
-    const blob = new Blob([outputRows.join('\n')], {type:'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'vn_emails.txt';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    
-    addDebug(`📥 Đã tải ${outputRows.length.toLocaleString()} email`);
+  if (!outputRows.length) return;
+  const blob = new Blob([outputRows.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'vn_emails_compound_v7.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 };
 </script>
 </body>
