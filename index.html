@@ -860,7 +860,7 @@
       'AUTHEN': ['AUTHEN', 'AUTH', 'AUTHENTICATOR', '2FA'],
       'SDT': ['SĐT', 'SDT', 'PHONE', 'SỐ ĐIỆN THOẠI', 'SO DIEN THOAI', 'PHONENUMBER'],
       'COUNTRY': ['QUỐC GIA', 'QUOC GIA', 'COUNTRY', 'QG', 'NATION'],
-      'STATUS': ['STATUS', 'TÌNH TRẠNG', 'TINH TRANG', 'STATE'],
+      'STATUS': ['STATUS', 'TÌNH TRẠNG', 'TINH TRANG', 'TRẠNG THÁI', 'TRANG THAI', 'STATE'],
       'RANK': ['RANK', 'HẠNG', 'HANG', 'RANKING']
     };
 
@@ -909,18 +909,26 @@
     }
 
     /**
-     * Extract Yes/No status
+     * Nhận dạng YES/NO từ đầu giá trị của từng trường.
+     * Ví dụ: EMAIL : NO [CHƯA XÁC THỰC] => NO (phần trong ngoặc là ghi chú).
+     * Không suy diễn YES/NO khi giá trị không rõ ràng hoặc thiếu trường.
      */
     function extractYesNo(line, fieldKey) {
       const text = extractFieldValue(line, fieldKey);
       if (!text) return null;
 
       const normalized = normalizeSearchText(text);
+      // "NO [CHƯA XÁC THỰC]" là NO; nhưng "KHÔNG RÕ" không có nghĩa là NO.
+      // Quyết định theo trạng thái rõ ràng, không đoán từ các ghi chú mơ hồ.
+      if (/^(?:no|none|null|false|0|not linked|unlinked|empty)(?:\s|$)/.test(normalized)) return 'NO';
+      if (/^(?:khong co|khong lien ket|chua co|chua lien ket|chua gan|chua them|trong)(?:\s|$)/.test(normalized) || normalized === 'khong') return 'NO';
+      if (/^(?:yes|true|1|have|linked)(?:\s|$)/.test(normalized)) return 'YES';
+      if (/^(?:co|da co|da lien ket|da gan|da them)(?:\s|$)/.test(normalized)) return 'YES';
 
-      if (/^(yes|co|1|true|have)$/.test(normalized)) return 'YES';
-      if (/^(no|khong|0|false|dont|none)$/.test(normalized)) return 'NO';
+      // Chỉ với EMAIL, địa chỉ email thực cũng cho biết tài khoản có email.
+      if (fieldKey === 'EMAIL' && /^[^\s@]+@[^\s@]+\.[^\s@]+/.test(text.trim())) return 'YES';
 
-      return text.toUpperCase();
+      return null;
     }
 
     /**
@@ -928,7 +936,7 @@
      */
     function extractFacebookStatus(line) {
       const text = extractFieldValue(line, 'FB');
-      if (!text) return 'NO';
+      if (!text) return null;
 
       const normalized = normalizeSearchText(text);
 
@@ -937,6 +945,17 @@
       if (/\bno\b|\bkhong\b|\bnone\b|\bnull\b|\bkhongtco\b/.test(normalized)) return 'NO';
 
       return text.toUpperCase();
+    }
+
+    /**
+     * So khớp đúng tên trạng thái/rank và chấp nhận thông tin phụ theo sau.
+     * Không dùng includes(): "Cao Thủ" không được khớp "Đại Cao Thủ".
+     */
+    function matchNamedValue(actual, selected) {
+      const value = normalizeSearchText(actual);
+      const target = normalizeSearchText(selected);
+      if (!value || !target) return false;
+      return value === target || value.startsWith(target + ' ');
     }
 
     // ========== RANGE PARSING ==========
@@ -1108,20 +1127,14 @@
         if (anime === null || anime < f.anime) return false;
       }
 
-      // Status
-      if (f.status) {
-        const status = extractFieldValue(line, 'STATUS');
-        if (!normalizeSearchText(status).includes(normalizeSearchText(f.status))) {
-          return false;
-        }
+      // Status: hỗ trợ cả "TRẠNG THÁI" và "TÌNH TRẠNG".
+      if (f.status && !matchNamedValue(extractFieldValue(line, 'STATUS'), f.status)) {
+        return false;
       }
 
-      // Rank
-      if (f.rank) {
-        const rank = extractFieldValue(line, 'RANK');
-        if (!normalizeSearchText(rank).includes(normalizeSearchText(f.rank))) {
-          return false;
-        }
+      // Rank: "Bạc III" khớp "Bạc", "Đại Cao Thủ" không khớp "Cao Thủ".
+      if (f.rank && !matchNamedValue(extractFieldValue(line, 'RANK'), f.rank)) {
+        return false;
       }
 
       // Facebook
@@ -1186,6 +1199,11 @@
       const f = getFilters();
 
       if (f.heroes?.type === 'invalid' || f.skins?.type === 'invalid' || f.level?.type === 'invalid') {
+        // Tránh hiển thị/xuất nhầm kết quả cũ khi người dùng nhập sai khoảng.
+        filteredLines = [];
+        els.textOutput.value = '';
+        setExportButtonsEnabled(false);
+        els.stats.textContent = '⚠️ Khoảng Tướng / Skin / Level không hợp lệ (ví dụ: 1-30 hoặc 1,5,10).';
         if (!silent) log('Range tướng/skin/level không hợp lệ. Dùng dạng 1-30 hoặc 1,5,10.', 'error');
         return;
       }
@@ -1211,24 +1229,38 @@
     }
 
     // ========== EXPORT FUNCTIONS ==========
-    function getCredentialPair(line) {
-      const firstPart = String(line || '').split('|')[0].trim();
-      if (!firstPart) return null;
+    // Tên trường metadata không phải là tài khoản/mật khẩu.
+    // Chỉ coi là metadata khi tên nằm trong danh sách trường đã hỗ trợ.
+    function isMetadataSegment(segment) {
+      const match = String(segment || '').trim().match(/^([^:=]+)\s*[:=]/);
+      if (!match) return false;
+      const key = normalizeSearchText(match[1]);
+      if (['name', 'ten', 'login lan cuoi', 'last login', 'other'].includes(key)) return true;
+      return Object.values(FIELD_MAP).some(aliases =>
+        aliases.some(alias => normalizeSearchText(alias) === key)
+      );
+    }
 
-      // Format: user:pass
-      if (firstPart.includes(':')) {
-        const [user, ...passParts] = firstPart.split(':');
-        const pass = passParts.join(':');
-        if (user && pass) return { user: user.trim(), pass: pass.trim() };
+    function getCredentialPair(line) {
+      // Ví dụ: RESULT = demoUser:demoPass | NAME : ...
+      // Xuất demoUser:demoPass, KHÔNG chứa tiền tố "RESULT =".
+      const parts = String(line || '').replace(/^\uFEFF/, '').split('|').map(part => part.trim());
+      const firstPart = (parts[0] || '').replace(
+        /^(?:(?:result|kết\s*quả|ket\s*qua)\s*[:=]\s*)+/i, ''
+      ).trim();
+      if (!firstPart || isMetadataSegment(firstPart)) return null;
+
+      // Dạng user:pass. Giữ dấu ':' còn lại nếu mật khẩu có dấu hai chấm.
+      const separator = firstPart.indexOf(':');
+      if (separator > 0) {
+        const user = firstPart.slice(0, separator).trim();
+        const pass = firstPart.slice(separator + 1).trim();
+        if (user && pass) return { user, pass };
       }
 
-      // Format: user | pass (first 2 parts)
-      const pipeParts = String(line || '').split('|').map(part => part.trim());
-      if (pipeParts.length >= 2 && pipeParts[0] && pipeParts[1]) {
-        const secondLooksLikeField = /^[A-ZÀ-Ỹ0-9 _-]+\s*:/i.test(pipeParts[1]);
-        if (!secondLooksLikeField) {
-          return { user: pipeParts[0], pass: pipeParts[1] };
-        }
+      // Dạng user | pass | FIELD : VALUE. Không lấy nhầm FIELD làm password.
+      if (parts.length >= 2 && firstPart && parts[1] && !isMetadataSegment(parts[1])) {
+        return { user: firstPart, pass: parts[1] };
       }
 
       return null;
@@ -1304,6 +1336,7 @@
     els.form.addEventListener('change', scheduleAutoFilter);
 
     els.clear.addEventListener('click', () => {
+      window.clearTimeout(scheduleAutoFilter.timer);
       els.textOutput.value = '';
       filteredLines = [];
       setExportButtonsEnabled(false);
@@ -1350,6 +1383,7 @@
     });
 
     els.reset.addEventListener('click', () => {
+      window.clearTimeout(scheduleAutoFilter.timer);
       els.form.reset();
       els.textOutput.value = '';
       filteredLines = [];
